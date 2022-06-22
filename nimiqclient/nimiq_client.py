@@ -3,10 +3,10 @@ __all__ = ["NimiqClient", "InternalErrorException", "RemoteErrorException"]
 from .models.account import *
 from .models.block import *
 from .models.mempool import *
-from .models.miner import *
 from .models.node import *
 from .models.peer import *
 from .models.transaction import *
+from .models.validator import *
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -27,7 +27,8 @@ class RemoteErrorException(Exception):
     """
 
     def __init__(self, message, code):
-        super(RemoteErrorException, self).__init__("{0} ({1})".format(message, code))
+        super(RemoteErrorException, self).__init__(
+            "{0} ({1})".format(message, code))
 
 
 class NimiqClient:
@@ -62,7 +63,7 @@ class NimiqClient:
         :type method: str
         :param params: Parameters used by the request.
         :type params: list
-        :return: If succesfull, returns the model reperestation of the result, None otherwise.
+        :return: If successful, returns the model representation of the result, None otherwise.
         :rtype: dict
         """
 
@@ -76,6 +77,8 @@ class NimiqClient:
             "params": list(args),
             "id": self.id,
         }
+
+        print("{}".format(call_object))
 
         # make request
         req_error = None
@@ -114,6 +117,24 @@ class NimiqClient:
         else:
             return Account(**data)
 
+    def _get_block(self, data):
+        """
+        Get the specific block type from the dictionary data.
+
+        :param data: The dictionary containing the data.
+        :type data: dict
+        :return: Block object.
+        :rtype: Block or MicroBlock or MacroBlock
+        """
+        type = data.get("type")
+        print("Type {}, data: {}".format(type, data))
+        if type == BlockType.MicroBlock:
+            return MicroBlock(**data)
+        elif type == BlockType.MacroBlock:
+            return MacroBlock(**data)
+        else:
+            return Block(**data)
+
     def accounts(self):
         """
         Returns a list of addresses owned by client.
@@ -121,7 +142,16 @@ class NimiqClient:
         :return: List of Accounts owned by the client.
         :rtype: list of (Account or VestingContract or HTLC)
         """
-        return [self._get_account(account) for account in self._call("accounts")]
+        return [self._get_account(account) for account in self._call("listAccounts")]
+
+    def batch_number(self):
+        """
+        Returns the batch number.
+
+        :return: The current batch number the client is on.
+        :rtype: int
+        """
+        return self._call("getBatchNumber")
 
     def block_number(self):
         """
@@ -130,49 +160,31 @@ class NimiqClient:
         :return: The current block height the client is on.
         :rtype: int
         """
-        return self._call("blockNumber")
+        return self._call("getBlockNumber")
 
     def consensus(self):
         """
         Returns information on the current consensus state.
 
         :return: Consensus state. "established" is the value for a good state, other values indicate bad.
-        :rtype: ConsensusState
+        :rtype: bool
         """
-        return ConsensusState(self._call("consensus"))
+        return self._call("isConsensusEstablished")
 
-    def constant(self, constant):
-        """
-        Returns the value of the constant.
-
-        :param constant: The class and name of the constant (format should be "Class.CONSTANT").
-        :type constant: str
-        :return: The value of the constant.
-        :rtype: int
-        """
-        return self._call("constant", constant)
-
-    def set_constant(self, constant, value=None):
-        """
-        Overrides the value of a constant. It sets the constant to the given value. To reset the constant use reset_constant() instead.
-
-        :param constant: The class and name of the constant (format should be "Class.CONSTANT").
-        :type constant: str
-        :param value: The new value of the constant.
-        :type value: int, optional
-        :return: The new value of the constant.
-        :rtype: int
-        """
-        return self._call("constant", constant, value)
-
-    def create_account(self):
+    def create_account(self, address, public_key, private_key):
         """
         Creates a new account and stores its private key in the client store.
 
+        :param address: Address of the account to create.
+        :type address: str
+        :param public_key: Public key of the account to create.
+        :type address: str
+        :param private_key: Private key of the account to create.
+        :type address: str
         :return: Information on the wallet that was created using the command.
         :rtype: Wallet
         """
-        return Wallet(**self._call("createAccount"))
+        return Wallet(**self._call("createAccount", address, public_key, private_key))
 
     def create_raw_transaction(self, transaction):
         """
@@ -185,7 +197,16 @@ class NimiqClient:
         """
         return self._call("createRawTransaction", transaction)
 
-    def get_account(self, address):
+    def epoch_number(self):
+        """
+        Returns the epoch number.
+
+        :return: The current epoch number the client is on.
+        :rtype: int
+        """
+        return self._call("getEpochNumber")
+
+    def get_account_by_address(self, address):
         """
         Returns details for the account of given address.
 
@@ -194,7 +215,7 @@ class NimiqClient:
         :return: Details about the account. Returns the default empty basic account for non-existing accounts.
         :rtype: Account or VestingContract or HTLC
         """
-        return self._get_account(self._call("getAccount", address))
+        return self._get_account(self._call("getAccountByAddress", address))
 
     def get_balance(self, address):
         """
@@ -223,7 +244,8 @@ class NimiqClient:
             result = self._call("getBlockByHash", hash, include_transactions)
         else:
             result = self._call("getBlockByHash", hash)
-        return Block(**result) if result is not None else None
+        print("Data {}".format(result))
+        return self._get_block(result) if result is not None else None
 
     def get_block_by_number(self, height, include_transactions=None):
         """
@@ -238,34 +260,11 @@ class NimiqClient:
         """
         result = None
         if include_transactions is not None:
-            result = self._call("getBlockByNumber", height, include_transactions)
+            result = self._call("getBlockByNumber", height,
+                                include_transactions)
         else:
             result = self._call("getBlockByNumber", height)
         return Block(**result) if result is not None else None
-
-    def get_block_template(self, address=None, extra_data=""):
-        """
-        Returns a template to build the next block for mining. This will consider pool instructions when connected to a pool.
-        If address and extra_data are provided the values are overriden.
-
-        :param address: The address to use as a miner for this block. This overrides the address provided during startup or from the pool.
-        :type address: str
-        :param extra_data: Hex-encoded value for the extra data field. This overrides the extra data provided during startup or from the pool.
-        :type extra_data: str
-        :return: A block template object.
-        :rtype: BlockTemplate
-        """
-        result = None
-        if address is not None:
-            result = self._call("getBlockTemplate", address, extra_data)
-        else:
-            result = self._call("getBlockTemplate")
-        return BlockTemplate(
-            BlockTemplateHeader(**result.get("header")),
-            result.get("interlink"),
-            BlockTemplateBody(**result.get("body")),
-            result.get("target"),
-        )
 
     def get_block_transaction_count_by_hash(self, hash):
         """
@@ -317,7 +316,8 @@ class NimiqClient:
         :return: A transaction object or None when no transaction was found.
         :rtype: Transaction or None
         """
-        result = self._call("getTransactionByBlockNumberAndIndex", height, index)
+        result = self._call(
+            "getTransactionByBlockNumberAndIndex", height, index)
         if result is not None:
             return Transaction(**result)
         else:
@@ -374,45 +374,75 @@ class NimiqClient:
             result = self._call("getTransactionsByAddress", address)
         return [Transaction(**tx) for tx in result]
 
-    def get_work(self, address=None, extra_data=""):
+    def get_validator_address(self):
         """
-        Returns instructions to mine the next block. This will consider pool instructions when connected to a pool.
+        Returns the address of the current validator.
 
-        :param address: The address to use as a miner for this block. This overrides the address provided during startup or from the pool.
+        :return: Address of the current validator.
+        :rtype: str or None
+        """
+        return self._call("getAddress")
+
+    def get_validator_by_address(self, address, include_stakers=None):
+        """
+        Returns a validator given its address
+
+        :param address: Address for which a validator should be gathered.
         :type address: str
-        :param extra_data: Hex-encoded value for the extra data field. This overrides the extra data provided during startup or from the pool.
-        :type extra_data: str
-        :return: Mining work instructions.
-        :rtype: WorkInstructions
+        :param include_stakers: Set to true to include stakers in the Validator object to be returned.
+        :type include_stakers: bool, optional
+        :return: Validator for the corresponding address
+        :rtype: Validator
         """
         result = None
-        if address is not None:
-            result = self._call("getWork", address, extra_data)
+        if include_stakers is not None:
+            result = self._call(
+                "getValidatorByAddress", address, include_stakers
+            )
         else:
-            result = self._call("getWork")
-        return WorkInstructions(**result)
+            result = self._call("getValidatorByAddress", address)
+        print(result)
+        return Validator(**result)
 
-    def hashrate(self):
+    def get_validator_signing_key(self):
         """
-        Returns the number of hashes per second that the node is mining with.
+        Returns the signing key of the current validator.
 
-        :return: Number of hashes per second.
-        :rtype: float
+        :return: Signing key of the current validator.
+        :rtype: str or None
         """
-        return self._call("hashrate")
+        return self._call("getSigningKey")
 
-    def set_log(self, tag, level):
+    def get_validator_voting_key(self):
         """
-        Sets the log level of the node.
+        Returns the voting key of the current validator.
 
-        :param tag: Tag: If "*" the log level is set globally, otherwise the log level is applied only on this tag.
-        :type tag: str
-        :param level: Minimum log level to display.
-        :type level: LogLevel
-        :return: True if the log level was changed, False otherwise.
+        :return: Voting key of the current validator.
+        :rtype: str or None
+        """
+        return self._call("getVotingKey")
+
+    def is_account_imported(self, address):
+        """
+        Returns wether an account has been imported into the wallet.
+
+        :param address: Address of the account that is going to be checked.
+        :type address: str
+        :return: Bool indicating wether the account has been imported.
         :rtype: bool
         """
-        return self._call("log", tag, level)
+        return self._call("isAccountImported", address)
+
+    def is_account_unlocked(self, address):
+        """
+        Returns wether an account has been unlocked in the wallet.
+
+        :param address: Address of the account that is going to be checked.
+        :type address: str
+        :return: Bool indicating wether the account has been unlocked.
+        :rtype: bool
+        """
+        return self._call("isAccountUnlocked", address)
 
     def mempool(self):
         """
@@ -440,35 +470,6 @@ class NimiqClient:
             result = self._call("mempoolContent")
         return [tx if type(tx) is str else Transaction(**tx) for tx in result]
 
-    def miner_address(self):
-        """
-        Returns the miner address.
-
-        :return: The miner address configured on the node.
-        :rtype: str
-        """
-        return self._call("minerAddress")
-
-    def miner_threads(self):
-        """
-        Returns the number of CPU threads for the miner.
-
-        :return: The number of threads allocated for mining.
-        :rtype: int
-        """
-        return self._call("minerThreads")
-
-    def set_miner_threads(self, threads=None):
-        """
-        Sets the number of CPU threads for the miner.
-
-        :param threads: The number of threads to allocate for mining.
-        :type threads: int, optional
-        :return: The new number of threads allocated for mining.
-        :rtype: int
-        """
-        return self._call("minerThreads", threads)
-
     def min_fee_per_byte(self):
         """
         Returns the minimum fee per byte.
@@ -476,47 +477,26 @@ class NimiqClient:
         :return: The new minimum fee per byte.
         :rtype: int
         """
-        return self._call("minFeePerByte")
-
-    def set_min_fee_per_byte(self, fee=None):
-        """
-        Sets the minimum fee per byte.
-
-        :param fee: The new minimum fee per byte.
-        :type fee: int, optional
-        :return: The new minimum fee per byte.
-        :rtype: int
-        """
-        return self._call("minFeePerByte", fee)
-
-    def is_mining(self):
-        """
-        Returns true if client is actively mining new blocks.
-
-        :return: True if the client is mining, otherwise False.
-        :rtype: bool
-        """
-        return self._call("mining")
-
-    def set_mining(self, state=None):
-        """
-        Sets the client mining state.
-
-        :param state: The state to be set.
-        :type state: bool
-        :return: True if the client is mining, otherwise False.
-        :rtype: bool
-        """
-        return self._call("mining", state)
+        return self._call("getMinFeePerByte")
 
     def peer_count(self):
         """
+
         Returns number of peers currently connected to the client.
 
         :return: Number of connected peers.
         :rtype: int
         """
-        return self._call("peerCount")
+        return self._call("getPeerCount")
+
+    def peer_id(self):
+        """
+        Returns the peer ID of the running client.
+
+        :return: Peer ID of the running client.
+        :rtype: string
+        """
+        return self._call("getPeerId")
 
     def peer_list(self):
         """
@@ -525,7 +505,7 @@ class NimiqClient:
         :return: The list of peers.
         :rtype: list of (Peer)
         """
-        return [Peer(**peer) for peer in self._call("peerList")]
+        return [Peer(**peer) for peer in self._call("getPeerList")]
 
     def peer_state(self, address):
         """
@@ -551,44 +531,6 @@ class NimiqClient:
         """
         return Peer(**self._call("peerState", address, command))
 
-    def pool(self):
-        """
-        Returns the mining pool.
-
-        :return: The mining pool connection string, or None if not enabled.
-        :rtype: str or None
-        """
-        return self._call("pool")
-
-    def set_pool(self, address=None):
-        """
-        Sets the mining pool.
-
-        :param address: The mining pool connection string ("url:port") or boolean to enable/disable pool mining.
-        :type address: str, optional
-        :return: The new mining pool connection string, or None if not enabled.
-        :rtype: str or None
-        """
-        return self._call("pool", address)
-
-    def pool_confirmed_balance(self):
-        """
-        Returns the confirmed mining pool balance.
-
-        :return: The confirmed mining pool balance (in smallest unit).
-        :rtype: int
-        """
-        return self._call("poolConfirmedBalance")
-
-    def pool_connection_state(self):
-        """
-        Returns the connection state to mining pool.
-
-        :return: The mining pool connection state.
-        :rtype: PoolConnectionState
-        """
-        return PoolConnectionState(self._call("poolConnectionState"))
-
     def send_raw_transaction(self, transaction):
         """
         Sends a signed message call transaction or a contract creation, if the data field contains code.
@@ -600,38 +542,24 @@ class NimiqClient:
         """
         return self._call("sendRawTransaction", transaction)
 
-    def send_transaction(self, transaction):
+    def send_basic_transaction(self, address, recipient, value, fee, validityStartHeight):
         """
-        Creates new message call transaction or a contract creation, if the data field contains code.
+        Creates and send a new basic transaction
 
-        :param transaction: The transaction object.
-        :type transaction: OutgoingTransaction
+        :param address: The sender address.
+        :type address: str
+        :param recipient: The recipient address.
+        :type recipient: str
+        :param value: The value of the transaction.
+        :type value: int
+        :param fee: The fee of the transaction.
+        :type fee: int
+        :param validityStartHeight: The validity start height for the transaction.
+        :type validityStartHeight: int
         :return: The Hex-encoded transaction hash.
         :rtype: str
         """
-        return self._call("sendTransaction", transaction)
-
-    def submit_block(self, block):
-        """
-        Submits a block to the node. When the block is valid, the node will forward it to other nodes in the network.
-
-        :param block: Hex-encoded full block (including header, interlink and body). When submitting work from getWork, remember to include the suffix.
-        :type block: Block
-        """
-        self._call("submitBlock", block)
-
-    def syncing(self):
-        """
-        Returns an object with data about the sync status or False.
-
-        :return: An object with sync status data or False, when not syncing.
-        :rtype: SyncStatus
-        """
-        result = self._call("syncing")
-        if type(result) is not bool:
-            return SyncStatus(**result)
-        else:
-            return result
+        return self._call("sendBasicTransaction", address, recipient, value, fee, validityStartHeight)
 
     def get_raw_transaction_info(self, transaction):
         """
@@ -643,14 +571,3 @@ class NimiqClient:
         :rtype: Transaction
         """
         return Transaction(**self._call("getRawTransactionInfo", transaction))
-
-    def reset_constant(self, constant):
-        """
-        Resets the constant to default value.
-
-        :param constant: Name of the constant.
-        :type constant: str
-        :return: The new value of the constant.
-        :rtype: int
-        """
-        return self._call("constant", constant, "reset")

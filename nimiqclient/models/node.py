@@ -1,22 +1,6 @@
-__all__ = ["ConsensusState", "SyncStatus", "LogLevel"]
+__all__ = ["SyncStatus", "LogLevel"]
 
 from enum import Enum
-
-
-class ConsensusState(str, Enum):
-    """
-    Consensus state returned by the server.
-    """
-
-    CONNECTING = "connecting"
-    """Connecting."""
-    SYNCING = "syncing"
-    """Syncing blocks."""
-    ESTABLISHED = "established"
-    """Consensus established."""
-
-    def __str__(self):
-        return self.value
 
 
 class SyncStatus:

@@ -1,4 +1,4 @@
-__all__ = ["OutgoingTransaction", "Transaction", "TransactionReceipt"]
+__all__ = ["OutgoingTransaction", "Transaction"]
 
 from .account import AccountType
 import json
@@ -40,7 +40,7 @@ def preprocess_args(func):
 
 class OutgoingTransaction(TXBase):
     """
-    Used to pass the data to send transaccions.
+    Used to pass the data to send transactions.
 
     :param from_: The address the transaction is send from.
     :type from_: str
@@ -151,38 +151,3 @@ class Transaction(TXBase):
         self.flags = flags
         self.valid = valid
         self.inMempool = inMempool
-
-
-class TransactionReceipt:
-    """
-    Transaction receipt returned by the server.
-
-    :param transactionHash: Hex-encoded hash of the transaction.
-    :type transactionHash: str
-    :param transactionIndex: Integer of the transactions index position in the block.
-    :type transactionIndex: int
-    :param blockHash: Hex-encoded hash of the block where this transaction was in.
-    :type blockHash: str
-    :param blockNumber: Block number where this transaction was in.
-    :type blockNumber: int
-    :param confirmations: Number of confirmations for this transaction (number of blocks on top of the block where this transaction was in).
-    :type confirmations: int
-    :param timestamp: Timestamp of the block where this transaction was in.
-    :type timestamp: int
-    """
-
-    def __init__(
-        self,
-        transactionHash,
-        transactionIndex,
-        blockHash,
-        blockNumber,
-        confirmations,
-        timestamp,
-    ):
-        self.transactionHash = transactionHash
-        self.transactionIndex = transactionIndex
-        self.blockHash = blockHash
-        self.blockNumber = blockNumber
-        self.confirmations = confirmations
-        self.timestamp = timestamp
