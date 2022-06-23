@@ -1,6 +1,8 @@
-__all__ = ["PeerAddressState", "PeerConnectionState", "PeerStateCommand", "Peer"]
-
 from enum import Enum
+
+
+__all__ = ["PeerAddressState", "PeerConnectionState",
+           "PeerStateCommand", "Peer"]
 
 
 class PeerAddressState(int, Enum):

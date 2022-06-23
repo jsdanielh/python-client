@@ -1,13 +1,14 @@
-__all__ = ["SyncStatus", "LogLevel"]
-
 from enum import Enum
+
+__all__ = ["SyncStatus", "LogLevel"]
 
 
 class SyncStatus:
     """
     Syncing status returned by the server.
 
-    :param startingBlock: The block at which the import started (will only be reset, after the sync reached his head).
+    :param startingBlock: The block at which the import started (will only be
+        reset, after the sync reached his head).
     :type startingBlock: int
     :param currentBlock: The current block, same as blockNumber.
     :type currentBlock: int

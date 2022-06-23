@@ -1,6 +1,6 @@
-__all__ = ["Validator"]
-
 from .staker import Staker
+
+__all__ = ["ParkedValidators", "Validator"]
 
 
 class Validator:
@@ -25,7 +25,8 @@ class Validator:
     :type stakers: list of(Staker)
     """
 
-    def __init__(self, address, signingKey, votingKey, rewardAddress, balance, numStakers, inactivityFlag=None, signalData=None, stakers={}):
+    def __init__(self, address, signingKey, votingKey, rewardAddress, balance,
+                 numStakers, inactivityFlag=None, signalData=None, stakers={}):
         self.address = address
         self.signingKey = signingKey
         self.votingKey = votingKey
@@ -44,3 +45,18 @@ class Validator:
                 "Couldn't parse Stakers {0}".format(stakers)
             )
         self.stakers = staker_objs
+
+
+class ParkedValidators:
+    """
+    Parked validators returned by the server
+
+    :param blockNumber: Block number in which the validators were parked.
+    :type blockNumber: int
+    :param validators: List of parked validators
+    :type validators: List of (Validator)
+    """
+
+    def __init__(self, blockNumber, validators):
+        self.blockNumber = blockNumber
+        self.validators = [Validator(**validator) for validator in validators]

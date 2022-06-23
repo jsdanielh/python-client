@@ -1,8 +1,7 @@
-__all__ = ["AccountType", "Account", "VestingContract", "HTLC"]
+__all__ = ["AccountType", "Account", "HTLC",
+           "VestingContract", "WalletAccount"]
 
 __metaclass__ = type
-
-from enum import Enum
 
 
 class AccountType:
@@ -46,15 +45,19 @@ class VestingContract(Account):
     :type balance: int
     :param type: The account type associated with the account.
     :type type: AccountType
-    :param owner: User friendly address (NQ-address) of the owner of the vesting contract.
+    :param owner: User friendly address (NQ-address) of the owner of the
+        vesting contract.
     :type owner: str
     :param vestingStart: The block that the vesting contracted commenced.
     :type vestingStart: int
-    :param vestingStepBlocks: The number of blocks after which some part of the vested funds is released.
+    :param vestingStepBlocks: The number of blocks after which some part of
+        the vested funds is released.
     :type vestingStepBlocks: int
-    :param vestingStepAmount: The amount (in smallest unit) released every vestingStepBlocks blocks.
+    :param vestingStepAmount: The amount (in smallest unit) released every
+        vestingStepBlocks blocks.
     :type vestingStepAmount: int
-    :param vestingTotalAmount: The total amount (in smallest unit) that was provided at the contract creation.
+    :param vestingTotalAmount: The total amount (in smallest unit) that was
+        provided at the contract creation.
     :type vestingTotalAmount: int
     """
 
@@ -87,17 +90,21 @@ class HTLC(Account):
     :type balance: int
     :param type: The account type associated with the account.
     :type type: AccountType
-    :param sender: User friendly address (NQ-address) of the sender of the HTLC.
+    :param sender: User friendly address (NQ-address) of the sender of the
+        HTLC.
     :type sender: str
-    :param recipient: User friendly address (NQ-address) of the recipient of the HTLC.
+    :param recipient: User friendly address (NQ-address) of the recipient of
+        the HTLC.
     :type recipient: str
     :param hashRoot: Hex-encoded 32 byte hash root.
     :type hashRoot: str
     :param hashCount: Number of hashes this HTLC is split into.
     :type hashCount: int
-    :param timeout: Block after which the contract can only be used by the original sender to recover funds.
+    :param timeout: Block after which the contract can only be used by the
+        original sender to recover funds.
     :type timeout: int
-    :param totalAmount: The total amount (in smallest unit) that was provided at the contract creation.
+    :param totalAmount: The total amount (in smallest unit) that was provided
+        at the contract creation.
     :type totalAmount: int
     """
 
@@ -120,3 +127,22 @@ class HTLC(Account):
         self.hashCount = hashCount
         self.timeout = timeout
         self.totalAmount = totalAmount
+
+
+class WalletAccount:
+    """
+    Account wallet returned by the server.
+
+    :param address: User friendly address (NQ-address).
+    :type address: str
+    :param publicKey: Hex-encoded 32 byte Ed25519 public key.
+    :type publicKey: str
+    :param privateKey: Hex-encoded 32 byte Ed25519 private key.
+    :type privateKey: str, optional
+    """
+
+    def __init__(self, address, publicKey, privateKey):
+        self.id = id
+        self.address = address
+        self.publicKey = publicKey
+        self.privateKey = privateKey

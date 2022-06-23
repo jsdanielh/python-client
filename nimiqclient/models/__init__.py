@@ -1,5 +1,6 @@
 from .account import *
 from .block import *
+from .inherent import *
 from .mempool import *
 from .node import *
 from .peer import *

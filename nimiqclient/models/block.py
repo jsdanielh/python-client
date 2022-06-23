@@ -1,7 +1,8 @@
-__all__ = ["Block", "BlockType",
-           "MicroBlock", "MacroBlock"]
-
 from .transaction import Transaction
+
+
+__all__ = ["Block", "BlockType", "ForkProof", "MicroBlock", "MacroBlock",
+           "SlashedSlots"]
 
 
 class BlockType:
@@ -51,7 +52,9 @@ class Block:
     :type historyHash: str
     """
 
-    def __init__(self, number, batch, type, bodyHash, epoch, extraData, hash, parentHash, size, version, view, timestamp, seed, stateHash, historyHash):
+    def __init__(self, number, batch, type, bodyHash, epoch, extraData, hash,
+                 parentHash, size, version, view, timestamp, seed, stateHash,
+                 historyHash):
         self.number = number
         self.batch = batch
         self.type = type
@@ -109,7 +112,8 @@ class MicroBlock(Block):
     :type forkProof: dict
     :param justification: Justification of the block
     :type justification: BlockJustification
-    :param transactions: List of transactions. Either represented by the transaction hash or a Transaction object.
+    :param transactions: List of transactions. Either represented by the
+        transaction hash or a Transaction object.
     :type transactions: list of(Transaction or str)
     """
 
@@ -135,8 +139,10 @@ class MicroBlock(Block):
         justification=None,
         transactions=[],
     ):
-        super(MicroBlock, self).__init__(number, batch, type,
-                                         bodyHash, epoch, extraData, hash, parentHash, size, version, view, timestamp, seed, stateHash, historyHash)
+        super(MicroBlock, self).__init__(number, batch, type, bodyHash, epoch,
+                                         extraData, hash, parentHash, size,
+                                         version, view, timestamp, seed,
+                                         stateHash, historyHash)
         self.producer = producer
         self.forkProofs = forkProofs
         self.justification = justification
@@ -188,7 +194,8 @@ class MacroBlock(Block):
     :type stateHash: str
     :param historyHash: Hash of the history of the block.
     :type historyHash: str
-    :param isElectionBlock: Indicates whether the block is an election macro block.
+    :param isElectionBlock: Indicates whether the block is an election macro
+        block.
     :type isElectionBlock: bool
     :param parentElectionHash: Parent election hash of the macro block.
     :type parentElectionHash: str
@@ -200,7 +207,8 @@ class MacroBlock(Block):
     :type disabledRewardSet: list
     :param justification: Justification of the block
     :type justification: BlockJustification
-    :param transactions: List of transactions. Either represented by the transaction hash or a Transaction object.
+    :param transactions: List of transactions. Either represented by the
+        transaction hash or a Transaction object.
     :type transactions: list of(Transaction or str)
     """
 
@@ -229,8 +237,10 @@ class MacroBlock(Block):
         justification=None,
         transactions=[],
     ):
-        super(MacroBlock, self).__init__(number, batch, type,
-                                         bodyHash, epoch, extraData, hash, parentHash, size, version, view, timestamp, seed, stateHash, historyHash)
+        super(MacroBlock, self).__init__(number, batch, type, bodyHash, epoch,
+                                         extraData, hash, parentHash, size,
+                                         version, view, timestamp, seed,
+                                         stateHash, historyHash)
         self.isElectionBlock = isElectionBlock
         self.parentElectionHash = parentElectionHash
         self.slots = slots
@@ -249,3 +259,40 @@ class MacroBlock(Block):
                         "Couldn't parse Transaction {0}".format(transaction)
                     )
         self.transactions = transactions
+
+
+class SlashedSlots:
+    """
+    Slashed slots returned from the server
+
+    :param blockNumber: Block number for the slashed slots.
+    :type blockNumber: int
+    :param lostRewards: Bitset indicating lost rewards for the slashed slots.
+    :type lostRewards: dict
+    :param disabled: Bitset indicating disabled slots.
+    :type disabled: dict
+    """
+
+    def __init__(self, blockNumber, lostRewards, disabled):
+        self.blockNumber = blockNumber
+        self.lostRewards = lostRewards
+        self.disabled = disabled
+
+
+class ForkProof:
+    """
+    Fork proof returned by the server
+
+    :param blockNumber: Block number for the fork proof.
+    :type blockNumber: int
+    :param viewNumber: View number for the fork proof.
+    :type viewNumber: int
+    :param hashes: List of hashes of the fork proof. The length of the list is
+        always 2.
+    :type hashes: List of (str)
+    """
+
+    def __init__(self, blockNumber, viewNumber, hashes):
+        self.blockNumber = blockNumber
+        self.viewNumber = viewNumber
+        self.hashes = hashes

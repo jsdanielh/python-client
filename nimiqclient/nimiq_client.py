@@ -1,16 +1,17 @@
-__all__ = ["NimiqClient", "InternalErrorException", "RemoteErrorException"]
-
 from .models.account import *
 from .models.block import *
+from .models.inherent import *
 from .models.mempool import *
 from .models.node import *
 from .models.peer import *
+from .models.staker import *
 from .models.transaction import *
 from .models.validator import *
 
 import requests
 from requests.auth import HTTPBasicAuth
-from enum import Enum
+
+__all__ = ["NimiqClient", "InternalErrorException", "RemoteErrorException"]
 
 
 class InternalErrorException(Exception):
@@ -35,7 +36,7 @@ class NimiqClient:
     """
     API client for the Nimiq JSON RPC server.
 
-    :param scheme: Protocol squeme, "http" or "https".
+    :param scheme: Protocol scheme, "http" or "https".
     :type scheme: str, optional
     :param user: Authorized user.
     :type user: str, optional
@@ -63,7 +64,8 @@ class NimiqClient:
         :type method: str
         :param params: Parameters used by the request.
         :type params: list
-        :return: If successful, returns the model representation of the result, None otherwise.
+        :return: If successful, returns the model representation of the
+            result, None otherwise.
         :rtype: dict
         """
 
@@ -142,7 +144,8 @@ class NimiqClient:
         :return: List of Accounts owned by the client.
         :rtype: list of (Account or VestingContract or HTLC)
         """
-        return [self._get_account(account) for account in self._call("listAccounts")]
+        return [self._get_account(account)
+                for account in self._call("listAccounts")]
 
     def batch_number(self):
         """
@@ -166,36 +169,25 @@ class NimiqClient:
         """
         Returns information on the current consensus state.
 
-        :return: Consensus state. "established" is the value for a good state, other values indicate bad.
+        :return: Consensus state. "established" is the value for a good state,
+            other values indicate bad.
         :rtype: bool
         """
         return self._call("isConsensusEstablished")
 
-    def create_account(self, address, public_key, private_key):
+    def create_account(self, passphrase=None):
         """
         Creates a new account and stores its private key in the client store.
 
-        :param address: Address of the account to create.
-        :type address: str
-        :param public_key: Public key of the account to create.
-        :type address: str
-        :param private_key: Private key of the account to create.
-        :type address: str
+        :param passphrase: Private Key passphrase to add to the account.
+        :type passphrase: str
         :return: Information on the wallet that was created using the command.
-        :rtype: Wallet
+        :rtype: WalletAccount
         """
-        return Wallet(**self._call("createAccount", address, public_key, private_key))
-
-    def create_raw_transaction(self, transaction):
-        """
-        Creates and signs a transaction without sending it. The transaction can then be send via sendRawTransaction() without accidentally replaying it.
-
-        :param transaction: The transaction object.
-        :type transaction: OutgoingTransaction
-        :return: Hex-encoded transaction.
-        :rtype: str
-        """
-        return self._call("createRawTransaction", transaction)
+        if passphrase is None:
+            return WalletAccount(**self._call("createAccount"))
+        else:
+            return WalletAccount(**self._call("createAccount", passphrase))
 
     def epoch_number(self):
         """
@@ -212,10 +204,22 @@ class NimiqClient:
 
         :param address: Address to get account details.
         :type address: str
-        :return: Details about the account. Returns the default empty basic account for non-existing accounts.
+        :return: Details about the account. Returns the default empty basic
+            account for non-existing accounts.
         :rtype: Account or VestingContract or HTLC
         """
         return self._get_account(self._call("getAccountByAddress", address))
+
+    def get_active_validators(self):
+        """
+        Returns a dictionary with the set of the current active validators.
+
+        :return: The current set of active validators using a dictionary with
+            the validator address as key (str) and the balance as value (int).
+        :rtype: dict
+
+        """
+        return self._call("getActiveValidators")
 
     def get_balance(self, address):
         """
@@ -223,7 +227,8 @@ class NimiqClient:
 
         :param address: Address to check for balance.
         :type address: str
-        :return: The current balance at the specified address (in smalest unit).
+        :return: The current balance at the specified address (in smallest
+            unit).
         :rtype: int
         """
         return self._call("getBalance", address)
@@ -234,7 +239,8 @@ class NimiqClient:
 
         :param hash: Hash of the block to gather information on.
         :type hash: str
-        :param include_transactions: If True it returns the full transaction objects, if False only the hashes of the transactions.
+        :param include_transactions: If True it returns the full transaction
+            objects, if False only the hashes of the transactions.
         :type include_transactions: bool, optional
         :return: A block object or None when no block was found.
         :rtype: Block or None
@@ -253,7 +259,8 @@ class NimiqClient:
 
         :param height: The height of the block to gather information on.
         :type height: int
-        :param include_transactions: If True it returns the full transaction objects, if False only the hashes of the transactions.
+        :param include_transactions: If True it returns the full transaction
+            objects, if False only the hashes of the transactions.
         :type include_transactions: bool, optional
         :return: A block object or None when no block was found.
         :rtype: Block or None
@@ -268,99 +275,123 @@ class NimiqClient:
 
     def get_block_transaction_count_by_hash(self, hash):
         """
-        Returns the number of transactions in a block from a block matching the given block hash.
+        Returns the number of transactions in a block from a block matching
+        the given block hash.
 
         :param hash: Hash of the block.
         :type hash: str
-        :return: Number of transactions in the block found, or None, when no block was found.
+        :return: Number of transactions in the block found, or None, when no
+            block was found.
         :rtype: int or None
         """
         return self._call("getBlockTransactionCountByHash", hash)
 
     def get_block_transaction_count_by_number(self, height):
         """
-        Returns the number of transactions in a block matching the given block number.
+        Returns the number of transactions in a block matching the given block
+        number.
 
         :param height: Height of the block.
         :type height: int
-        :return: Number of transactions in the block found, or None, when no block was found.
+        :return: Number of transactions in the block found, or None, when no
+            block was found.
         :rtype: int or None
         """
         return self._call("getBlockTransactionCountByNumber", height)
 
-    def get_transaction_by_block_hash_and_index(self, hash, index):
+    def get_current_slashed_slots(self):
         """
-        Returns information about a transaction by block hash and transaction index position.
+        Returns the current slashed slots.
 
-        :param hash: Hash of the block containing the transaction.
-        :type hash: str
-        :param index: Index of the transaction in the block.
-        :type index: int
-        :return: A transaction object or None when no transaction was found.
-        :rtype: Transaction or None
+        :return: Current slashed slots.
+        :rtype: SlashedSlots
         """
-        result = self._call("getTransactionByBlockHashAndIndex", hash, index)
-        if result is not None:
-            return Transaction(**result)
-        else:
-            return None
+        return SlashedSlots(**self.call("getCurrentSlashedSlots"))
 
-    def get_transaction_by_block_number_and_index(self, height, index):
+    def get_inherents_by_batch_number(self, batch_number):
         """
-        Returns information about a transaction by block number and transaction index position.
+        Returns information about inherents by batch number.
 
-        :param height: Height of the block containing the transaction.
-        :type height: int
-        :param index: Index of the transaction in the block.
-        :type index: int
-        :return: A transaction object or None when no transaction was found.
-        :rtype: Transaction or None
+        :param batch_number: Batch number for which the inherents are going to
+            be gathered.
+        :type batch_number: int
+        :return: A list of inherent objects.
+        :rtype: List of (Inherent)
         """
         result = self._call(
-            "getTransactionByBlockNumberAndIndex", height, index)
+            "getInherentsByBatchNumber", batch_number)
         if result is not None:
-            return Transaction(**result)
+            return [Inherent(**inherent) for inherent in result]
         else:
-            return None
+            return []
 
-    def get_transaction_by_hash(self, hash):
+    def get_inherents_by_block_number(self, height):
         """
-        Returns the information about a transaction requested by transaction hash.
+        Returns information about inherents by block number.
 
-        :param hash: Hash of a transaction.
-        :type hash: str
-        :return: A transaction object or None when no transaction was found.
-        :rtype: Transaction or None
+        :param height: Height of the block containing the inherents.
+        :type height: int
+        :return: A list of inherent objects.
+        :rtype: List of (Inherent)
         """
-        result = self._call("getTransactionByHash", hash)
+        result = self._call(
+            "getInherentsByBlockNumber", height)
         if result is not None:
-            return Transaction(**result)
+            return [Inherent(**inherent) for inherent in result]
         else:
-            return None
+            return []
 
-    def get_transaction_receipt(self, hash):
+    def get_parked_validators(self):
         """
-        Returns the receipt of a transaction by transaction hash.
+        Returns the set of current parked validators.
 
-        :param hash: Hash of a transaction.
-        :type hash: str
-        :return: A transaction receipt object, or None when no receipt was found.
-        :rtype: TransactionReceipt or None
+        :return: Set of current parked validators.
+        :rtype: ParkedValidators
         """
-        result = self._call("getTransactionReceipt", hash)
-        if result is not None:
-            return TransactionReceipt(**result)
-        else:
-            return None
+        return ParkedValidators(**self.call("getParkedValidators"))
 
-    def get_transactions_by_address(self, address, number_of_transactions=None):
+    def get_previous_slashed_slots(self):
         """
-        Returns the latest transactions successfully performed by or for an address.
-        Note that this information might change when blocks are rewinded on the local state due to forks.
+        Returns the previous slashed slots.
+
+        :return: Previous slashed slots.
+        :rtype: SlashedSlots
+        """
+        return SlashedSlots(**self.call("getPreviousSlashedSlots"))
+
+    def get_raw_transaction_info(self, transaction):
+        """
+        Deserializes hex-encoded transaction and returns a transaction object.
+
+        :param transaction: The hex encoded signed transaction.
+        :type transaction: str
+        :return: The transaction object.
+        :rtype: Transaction
+        """
+        return Transaction(**self._call("getRawTransactionInfo", transaction))
+
+    def get_staker_by_address(self, address):
+        """
+        Gets a staker using its address
+
+        :param address: Address of the staker.
+        :type address: str
+        :return: The staker object.
+        :rtype: Staker
+        """
+        return Staker(**self._call("getStakerByAddress", address))
+
+    def get_transactions_by_address(self, address,
+                                    number_of_transactions=None):
+        """
+        Returns the latest transactions successfully performed by or for an
+        address. Note that this information might change when blocks are
+        reverted on the local state due to forks.
 
         :param address: Address of which transactions should be gathered.
         :type address: str
-        :param number_of_transactions: Number of transactions that shall be returned.
+        :param number_of_transactions: Maximum number of transactions that
+            shall be returned.
         :type number_of_transactions: int, optional
         :return: List of transactions linked to the requested address.
         :rtype: list of (Transaction)
@@ -373,6 +404,80 @@ class NimiqClient:
         else:
             result = self._call("getTransactionsByAddress", address)
         return [Transaction(**tx) for tx in result]
+
+    def get_transaction_hashes_by_address(self, address,
+                                          number_of_transactions=None):
+        """
+        Returns the hashes of the latest transactions successfully performed
+        by or for an address. Note that this information might change when
+        blocks are reverted on the local state due to forks.
+
+        :param address: Address of which transactions should be gathered.
+        :type address: str
+        :param number_of_transactions: Maximum number of transactions that
+            shall be returned.
+        :type number_of_transactions: int, optional
+        :return: List of hashes of transactions linked to the requested
+            address.
+        :rtype: list of (str)
+        """
+        result = None
+        if number_of_transactions is not None:
+            result = self._call(
+                "getTransactionHashesByAddress", address,
+                number_of_transactions)
+        else:
+            result = self._call("getTransactionHashesByAddress", address)
+        return result
+
+    def get_transactions_by_batch_number(self, batch_number):
+        """
+        Returns information about transactions by batch number.
+
+        :param batch_number: Batch number for which the transactions are going
+            to be gathered.
+        :type batch_number: int
+        :return: A list of transaction objects.
+        :rtype: List of (Transaction)
+        """
+        result = self._call(
+            "getTransactionsByBatchNumber", batch_number)
+        if result is not None:
+            return [Transaction(**tx) for tx in result]
+        else:
+            return []
+
+    def get_transactions_by_block_number(self, height):
+        """
+        Returns information about transactions by block number.
+
+        :param height: Height of the block containing the transactions.
+        :type height: int
+        :return: A list of transaction objects.
+        :rtype: List of (Transaction)
+        """
+        result = self._call(
+            "getTransactionsByBlockNumber", height)
+        if result is not None:
+            return [Transaction(**tx) for tx in result]
+        else:
+            return []
+
+    def get_transaction_by_hash(self, hash):
+        """
+        Returns the information about a transaction requested by transaction
+        hash.
+
+        :param hash: Hash of a transaction.
+        :type hash: str
+        :return: A transaction object or None when no transaction was found.
+        :rtype: Transaction or None
+        """
+        result = self._call("getTransactionByHash", hash)
+        if result is not None:
+            return Transaction(**result)
+        else:
+            return None
 
     def get_validator_address(self):
         """
@@ -389,7 +494,8 @@ class NimiqClient:
 
         :param address: Address for which a validator should be gathered.
         :type address: str
-        :param include_stakers: Set to true to include stakers in the Validator object to be returned.
+        :param include_stakers: Set to true to include stakers in the
+            Validator object to be returned.
         :type include_stakers: bool, optional
         :return: Validator for the corresponding address
         :rtype: Validator
@@ -422,6 +528,22 @@ class NimiqClient:
         """
         return self._call("getVotingKey")
 
+    def importRawKey(self, private_key, passphrase=None):
+        """
+        Imports a raw key into the wallet.
+
+        :param private_key: Private key to be imported.
+        :type address: str
+        :param passphrase: Optional passphrase to add to the private key.
+        :type passphrase: str
+        :return: Address of the imported raw key.
+        :rtype: str
+        """
+        if passphrase is None:
+            return self._call("importRawKey", private_key)
+        else:
+            return self._call("importRawKey", private_key, passphrase)
+
     def is_account_imported(self, address):
         """
         Returns wether an account has been imported into the wallet.
@@ -444,9 +566,20 @@ class NimiqClient:
         """
         return self._call("isAccountUnlocked", address)
 
+    def lock_account(self, address):
+        """
+        Locks an account in the wallet
+
+        :param address: Address of the account to be locked.
+        :type address: sre
+        """
+        self._call("lockAccount", address)
+
     def mempool(self):
         """
-        Returns information on the current mempool situation. This will provide an overview of the number of transactions sorted into buckets based on their fee per byte (in smallest unit).
+        Returns information on the current mempool situation. This will
+        provide an overview of the number of transactions sorted into buckets
+        based on their fee per byte (in smallest unit).
 
         :return: Mempool information.
         :rtype: MempoolInfo
@@ -458,10 +591,12 @@ class NimiqClient:
         """
         Returns transactions that are currently in the mempool.
 
-        :param include_transactions: If True includes full transactions, if False includes only transaction hashes.
+        :param include_transactions: If True includes full transactions, if
+            False includes only transaction hashes.
         :type include_transactions: bool, optional
-        :return: List of transactions (either represented by the transaction hash or a transaction object).
-        :rtype: list of (Transaction or str)
+        :return: List of transactions(either represented by the transaction
+            hash or a transaction object).
+        :rtype: list of(Transaction or str)
         """
         result = None
         if include_transactions is not None:
@@ -503,7 +638,7 @@ class NimiqClient:
         Returns list of peers known to the client.
 
         :return: The list of peers.
-        :rtype: list of (Peer)
+        :rtype: list of(Peer)
         """
         return [Peer(**peer) for peer in self._call("getPeerList")]
 
@@ -533,7 +668,8 @@ class NimiqClient:
 
     def send_raw_transaction(self, transaction):
         """
-        Sends a signed message call transaction or a contract creation, if the data field contains code.
+        Sends a signed message call transaction or a contract creation, if the
+        data field contains code.
 
         :param transaction: The hex encoded signed transaction
         :type transaction: str
@@ -542,7 +678,8 @@ class NimiqClient:
         """
         return self._call("sendRawTransaction", transaction)
 
-    def send_basic_transaction(self, address, recipient, value, fee, validityStartHeight):
+    def send_basic_transaction(self, address, recipient, value, fee,
+                               validityStartHeight):
         """
         Creates and send a new basic transaction
 
@@ -554,20 +691,32 @@ class NimiqClient:
         :type value: int
         :param fee: The fee of the transaction.
         :type fee: int
-        :param validityStartHeight: The validity start height for the transaction.
+        :param validityStartHeight: The validity start height for the
+            transaction.
         :type validityStartHeight: int
         :return: The Hex-encoded transaction hash.
         :rtype: str
         """
-        return self._call("sendBasicTransaction", address, recipient, value, fee, validityStartHeight)
+        return self._call("sendBasicTransaction", address, recipient, value,
+                          fee, validityStartHeight)
 
-    def get_raw_transaction_info(self, transaction):
+    def unlock_account(self, address, passphrase=None, duration=None):
         """
-        Deserializes hex-encoded transaction and returns a transaction object.
+        Unlocks a wallet account
 
-        :param transaction: The hex encoded signed transaction.
-        :type transaction: str
-        :return: The transaction object.
-        :rtype: Transaction
+        :param address: The account address.
+        :type address: str
+        :param passphrase: Optional passphrase if the accounts requires it.
+        :type passphrase: str
+        :param value: Duration in which the account is unlocked.
+        :type value: int
+        :param fee: The fee of the transaction.
+        :type fee: int
+        :param validityStartHeight: The validity start height for the
+            transaction.
+        :type validityStartHeight: int
         """
-        return Transaction(**self._call("getRawTransactionInfo", transaction))
+        if passphrase is None:
+            self._call("unlockAccount", address)
+        else:
+            self._call("unlockAccount", address, passphrase)
