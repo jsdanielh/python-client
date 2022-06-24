@@ -91,6 +91,7 @@ class NimiqClient:
             "id": self.id,
         }
 
+        call_object = json.dumps(call_object)
         print("{}".format(call_object))
 
         # make request
@@ -98,12 +99,12 @@ class NimiqClient:
         try:
             if self.websocket:
                 self.session.send(
-                    json.dumps(call_object)
+                    call_object
                 )
                 resp_object = json.loads(self.session.recv())
             else:
                 resp_object = self.session.post(
-                    self.url, json=call_object, auth=self.auth
+                    self.url, data=call_object, auth=self.auth
                 ).json()
 
         except Exception as e:
@@ -115,6 +116,7 @@ class NimiqClient:
         if error is not None:
             raise RemoteErrorException(
                 error.get("message"), error.get("code"))
+
         return resp_object.get("result")
 
     def _get_account(self, data):
@@ -157,10 +159,10 @@ class NimiqClient:
         Returns a list of addresses owned by client.
 
         :return: List of Accounts owned by the client.
-        :rtype: list of (Account or VestingContract or HTLC)
+        :rtype: list of (str)
         """
-        return [self._get_account(account)
-                for account in self._call("listAccounts")]
+        result = self._call("listAccounts")
+        return result if result is not None else []
 
     def batch_number(self):
         """
@@ -199,10 +201,7 @@ class NimiqClient:
         :return: Information on the wallet that was created using the command.
         :rtype: WalletAccount
         """
-        if passphrase is None:
-            return WalletAccount(**self._call("createAccount"))
-        else:
-            return WalletAccount(**self._call("createAccount", passphrase))
+        return WalletAccount(**self._call("createAccount", passphrase))
 
     def epoch_number(self):
         """
@@ -261,11 +260,7 @@ class NimiqClient:
         :rtype: Block or None
         """
         result = None
-        if include_transactions is not None:
-            result = self._call("getBlockByHash", hash, include_transactions)
-        else:
-            result = self._call("getBlockByHash", hash)
-        print("Data {}".format(result))
+        result = self._call("getBlockByHash", hash, include_transactions)
         return self._get_block(result) if result is not None else None
 
     def get_block_by_number(self, height, include_transactions=None):
@@ -281,11 +276,8 @@ class NimiqClient:
         :rtype: Block or None
         """
         result = None
-        if include_transactions is not None:
-            result = self._call("getBlockByNumber", height,
-                                include_transactions)
-        else:
-            result = self._call("getBlockByNumber", height)
+        result = self._call("getBlockByNumber", height,
+                            include_transactions)
         return Block(**result) if result is not None else None
 
     def get_block_transaction_count_by_hash(self, hash):
@@ -412,12 +404,9 @@ class NimiqClient:
         :rtype: list of (Transaction)
         """
         result = None
-        if number_of_transactions is not None:
-            result = self._call(
-                "getTransactionsByAddress", address, number_of_transactions
-            )
-        else:
-            result = self._call("getTransactionsByAddress", address)
+        result = self._call(
+            "getTransactionsByAddress", address, number_of_transactions
+        )
         return [Transaction(**tx) for tx in result]
 
     def get_transaction_hashes_by_address(self, address,
@@ -437,12 +426,9 @@ class NimiqClient:
         :rtype: list of (str)
         """
         result = None
-        if number_of_transactions is not None:
-            result = self._call(
-                "getTransactionHashesByAddress", address,
-                number_of_transactions)
-        else:
-            result = self._call("getTransactionHashesByAddress", address)
+        result = self._call(
+            "getTransactionHashesByAddress", address,
+            number_of_transactions)
         return result
 
     def get_transactions_by_batch_number(self, batch_number):
@@ -489,10 +475,7 @@ class NimiqClient:
         :rtype: Transaction or None
         """
         result = self._call("getTransactionByHash", hash)
-        if result is not None:
-            return Transaction(**result)
-        else:
-            return None
+        return Transaction(**result) if result is not None else None
 
     def get_validator_address(self):
         """
@@ -516,14 +499,10 @@ class NimiqClient:
         :rtype: Validator
         """
         result = None
-        if include_stakers is not None:
-            result = self._call(
-                "getValidatorByAddress", address, include_stakers
-            )
-        else:
-            result = self._call("getValidatorByAddress", address)
-        print(result)
-        return Validator(**result)
+        result = self._call(
+            "getValidatorByAddress", address, include_stakers
+        )
+        return Validator(**result) if result is not None else None
 
     def get_validator_signing_key(self):
         """
@@ -554,10 +533,7 @@ class NimiqClient:
         :return: Address of the imported raw key.
         :rtype: str
         """
-        if passphrase is None:
-            return self._call("importRawKey", private_key)
-        else:
-            return self._call("importRawKey", private_key, passphrase)
+        return self._call("importRawKey", private_key, passphrase)
 
     def is_account_imported(self, address):
         """
@@ -614,10 +590,7 @@ class NimiqClient:
         :rtype: list of(Transaction or str)
         """
         result = None
-        if include_transactions is not None:
-            result = self._call("mempoolContent", include_transactions)
-        else:
-            result = self._call("mempoolContent")
+        result = self._call("mempoolContent", include_transactions)
         return [tx if type(tx) is str else Transaction(**tx) for tx in result]
 
     def min_fee_per_byte(self):
@@ -723,15 +696,7 @@ class NimiqClient:
         :type address: str
         :param passphrase: Optional passphrase if the accounts requires it.
         :type passphrase: str
-        :param value: Duration in which the account is unlocked.
-        :type value: int
-        :param fee: The fee of the transaction.
-        :type fee: int
-        :param validityStartHeight: The validity start height for the
-            transaction.
-        :type validityStartHeight: int
+        :param duration: Optional duration in which the account is unlocked.
+        :type duration: int
         """
-        if passphrase is None:
-            self._call("unlockAccount", address)
-        else:
-            self._call("unlockAccount", address, passphrase)
+        self._call("unlockAccount", address, passphrase, duration)
