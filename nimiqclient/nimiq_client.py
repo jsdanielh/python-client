@@ -8,6 +8,8 @@ from .models.staker import *
 from .models.transaction import *
 from .models.validator import *
 
+import json
+import websocket
 import requests
 from requests.auth import HTTPBasicAuth
 
@@ -36,7 +38,7 @@ class NimiqClient:
     """
     API client for the Nimiq JSON RPC server.
 
-    :param scheme: Protocol scheme, "http" or "https".
+    :param scheme: Protocol scheme, "http" or "https" or "ws".
     :type scheme: str, optional
     :param user: Authorized user.
     :type user: str, optional
@@ -53,8 +55,17 @@ class NimiqClient:
     ):
         self.id = 0
         self.url = "{0}://{1}:{2}".format(scheme, host, port)
+        if scheme not in ["ws", "http", "https"]:
+            raise InternalErrorException("Invalid scheme: {}".format(scheme))
+
+        self.websocket = scheme == "ws"
         self.auth = HTTPBasicAuth(user, password)
-        self.session = requests.Session()
+
+        if self.websocket:
+            self.url += "/ws"
+            self.session = websocket.create_connection(self.url)
+        else:
+            self.session = requests.Session()
 
     def _call(self, method, *args):
         """
@@ -85,21 +96,25 @@ class NimiqClient:
         # make request
         req_error = None
         try:
-            resp_object = self.session.post(
-                self.url, json=call_object, auth=self.auth
-            ).json()
+            if self.websocket:
+                self.session.send(
+                    json.dumps(call_object)
+                )
+                resp_object = json.loads(self.session.recv())
+            else:
+                resp_object = self.session.post(
+                    self.url, json=call_object, auth=self.auth
+                ).json()
 
         except Exception as e:
             req_error = e
-
         # raise if there was any error
         if req_error is not None:
             raise InternalErrorException(req_error)
-
         error = resp_object.get("error")
         if error is not None:
-            raise RemoteErrorException(error.get("message"), error.get("code"))
-
+            raise RemoteErrorException(
+                error.get("message"), error.get("code"))
         return resp_object.get("result")
 
     def _get_account(self, data):

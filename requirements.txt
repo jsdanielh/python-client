@@ -1,4 +1,4 @@
 enum34
 jsonrpcclient
 requests
-websockets
+websocket-client

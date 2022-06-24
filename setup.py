@@ -15,7 +15,7 @@ setup(
     license="Apache 2.0",
     packages=["nimiqclient", "nimiqclient.models"],
     zip_safe=True,
-    install_requires=["requests", "enum34"],
+    install_requires=["enum34", "jsonrpcclient", "requests", "websocket-client"],
     python_requires=">=2.4",
     test_suite="test",
 )

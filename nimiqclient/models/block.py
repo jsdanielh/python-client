@@ -23,7 +23,7 @@ class Block:
     :param number: Height of the block.
     :type number: int
     :param batch: Batch number of the block.
-    :type number: int
+    :type batch: int
     :param type: The block type associated with the block.
     :type type: BlockType
     :param bodyHash: Hash of the block body.
