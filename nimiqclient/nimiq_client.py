@@ -90,9 +90,7 @@ class NimiqClient:
             "params": list(args),
             "id": self.id,
         }
-
         call_object = json.dumps(call_object)
-        print("{}".format(call_object))
 
         # make request
         req_error = None
@@ -146,7 +144,6 @@ class NimiqClient:
         :rtype: Block or MicroBlock or MacroBlock
         """
         type = data.get("type")
-        print("Type {}, data: {}".format(type, data))
         if type == BlockType.MicroBlock:
             return MicroBlock(**data)
         elif type == BlockType.MacroBlock:
