@@ -1,4 +1,3 @@
 enum34
-jsonrpcclient
+fastapi_websocket_rpc
 requests
-websocket-client

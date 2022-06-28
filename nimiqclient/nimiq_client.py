@@ -7,31 +7,16 @@ from .models.peer import *
 from .models.staker import *
 from .models.transaction import *
 from .models.validator import *
+from .websocket_rpc import NimiqRPCMethods, NimiqSerializer
+from .error_exception import InternalErrorException, RemoteErrorException
 
+from typing import Any, Awaitable, Callable
+from fastapi_websocket_rpc import WebSocketRpcClient
 import json
-import websocket
 import requests
 from requests.auth import HTTPBasicAuth
 
 __all__ = ["NimiqClient", "InternalErrorException", "RemoteErrorException"]
-
-
-class InternalErrorException(Exception):
-    """
-    Internal error during a JSON RPC request.
-    """
-
-    pass
-
-
-class RemoteErrorException(Exception):
-    """
-    Exception on the remote server.
-    """
-
-    def __init__(self, message, code):
-        super(RemoteErrorException, self).__init__(
-            "{0} ({1})".format(message, code))
 
 
 class NimiqClient:
@@ -54,6 +39,8 @@ class NimiqClient:
         self, scheme="http", user="", password="", host="127.0.0.1", port=8648
     ):
         self.id = 0
+        self.callbacks = {}
+        self.subscriptions = {}
         self.url = "{0}://{1}:{2}".format(scheme, host, port)
         if scheme not in ["ws", "http", "https"]:
             raise InternalErrorException("Invalid scheme: {}".format(scheme))
@@ -63,11 +50,26 @@ class NimiqClient:
 
         if self.websocket:
             self.url += "/ws"
-            self.session = websocket.create_connection(self.url)
+            self.session = WebSocketRpcClient(
+                self.url,
+                NimiqRPCMethods(self),
+                serializing_socket_cls=NimiqSerializer,
+                default_response_timeout=5)
+            # Disable ping messages since the Nimiq server doesn't support it
+            self.session.MAX_CONNECTION_ATTEMPTS = 0
         else:
             self.session = requests.Session()
 
-    def _call(self, method, *args):
+    async def __aenter__(self):
+        if self.websocket:
+            self.session = await self.session.__aenter__()
+        return self
+
+    async def __aexit__(self, *args, **kwargs):
+        if self.websocket:
+            await self.session.__aexit__(*args, **kwargs)
+
+    async def _call(self, method, *args):
         """
         Used in all JSONRPC requests to fetch the data.
 
@@ -80,6 +82,12 @@ class NimiqClient:
         :rtype: dict
         """
 
+        if self.websocket:
+            result = await self.session.call(
+                method,
+                {i: k for i, k in enumerate(args)})
+            return result.result
+
         # increase the JSONRPC client request id
         self.id += 1
 
@@ -90,20 +98,15 @@ class NimiqClient:
             "params": list(args),
             "id": self.id,
         }
+
         call_object = json.dumps(call_object)
 
         # make request
         req_error = None
         try:
-            if self.websocket:
-                self.session.send(
-                    call_object
-                )
-                resp_object = json.loads(self.session.recv())
-            else:
-                resp_object = self.session.post(
-                    self.url, data=call_object, auth=self.auth
-                ).json()
+            resp_object = self.session.post(
+                self.url, data=call_object, auth=self.auth
+            ).json()
 
         except Exception as e:
             req_error = e
@@ -114,8 +117,17 @@ class NimiqClient:
         if error is not None:
             raise RemoteErrorException(
                 error.get("message"), error.get("code"))
-
         return resp_object.get("result")
+
+    async def _call_and_subscribe(self, callback, method, *args):
+        if self.websocket:
+            self.callbacks[method] = callback
+            subscription = await self._call(method, *args)
+            self.subscriptions[method] = subscription
+        else:
+            raise InternalErrorException(
+                "Protocol {} doesn't support RPC subscription".format(
+                    self.scheme))
 
     def _get_account(self, data):
         """
@@ -151,35 +163,35 @@ class NimiqClient:
         else:
             return Block(**data)
 
-    def accounts(self):
+    async def accounts(self):
         """
         Returns a list of addresses owned by client.
 
         :return: List of Accounts owned by the client.
         :rtype: list of (str)
         """
-        result = self._call("listAccounts")
+        result = await self._call("listAccounts")
         return result if result is not None else []
 
-    def batch_number(self):
+    async def batch_number(self):
         """
         Returns the batch number.
 
         :return: The current batch number the client is on.
         :rtype: int
         """
-        return self._call("getBatchNumber")
+        return await self._call("getBatchNumber")
 
-    def block_number(self):
+    async def block_number(self):
         """
         Returns the height of most recent block.
 
         :return: The current block height the client is on.
         :rtype: int
         """
-        return self._call("getBlockNumber")
+        return await self._call("getBlockNumber")
 
-    def consensus(self):
+    async def consensus(self):
         """
         Returns information on the current consensus state.
 
@@ -187,9 +199,9 @@ class NimiqClient:
             other values indicate bad.
         :rtype: bool
         """
-        return self._call("isConsensusEstablished")
+        return await self._call("isConsensusEstablished")
 
-    def create_account(self, passphrase=None):
+    async def create_account(self, passphrase=None):
         """
         Creates a new account and stores its private key in the client store.
 
@@ -198,18 +210,18 @@ class NimiqClient:
         :return: Information on the wallet that was created using the command.
         :rtype: WalletAccount
         """
-        return WalletAccount(**self._call("createAccount", passphrase))
+        return WalletAccount(**await self._call("createAccount", passphrase))
 
-    def epoch_number(self):
+    async def epoch_number(self):
         """
         Returns the epoch number.
 
         :return: The current epoch number the client is on.
         :rtype: int
         """
-        return self._call("getEpochNumber")
+        return await self._call("getEpochNumber")
 
-    def get_account_by_address(self, address):
+    async def get_account_by_address(self, address):
         """
         Returns details for the account of given address.
 
@@ -219,9 +231,10 @@ class NimiqClient:
             account for non-existing accounts.
         :rtype: Account or VestingContract or HTLC
         """
-        return self._get_account(self._call("getAccountByAddress", address))
+        return self._get_account(
+            await self._call("getAccountByAddress", address))
 
-    def get_active_validators(self):
+    async def get_active_validators(self):
         """
         Returns a dictionary with the set of the current active validators.
 
@@ -230,9 +243,9 @@ class NimiqClient:
         :rtype: dict
 
         """
-        return self._call("getActiveValidators")
+        return await self._call("getActiveValidators")
 
-    def get_balance(self, address):
+    async def get_balance(self, address):
         """
         Returns the balance of the account of given address.
 
@@ -242,9 +255,9 @@ class NimiqClient:
             unit).
         :rtype: int
         """
-        return self._call("getBalance", address)
+        return await self._call("getBalance", address)
 
-    def get_block_by_hash(self, hash, include_transactions=None):
+    async def get_block_by_hash(self, hash, include_transactions=None):
         """
         Returns information about a block by hash.
 
@@ -257,10 +270,10 @@ class NimiqClient:
         :rtype: Block or None
         """
         result = None
-        result = self._call("getBlockByHash", hash, include_transactions)
+        result = await self._call("getBlockByHash", hash, include_transactions)
         return self._get_block(result) if result is not None else None
 
-    def get_block_by_number(self, height, include_transactions=None):
+    async def get_block_by_number(self, height, include_transactions=None):
         """
         Returns information about a block by block number.
 
@@ -273,11 +286,11 @@ class NimiqClient:
         :rtype: Block or None
         """
         result = None
-        result = self._call("getBlockByNumber", height,
-                            include_transactions)
+        result = await self._call("getBlockByNumber", height,
+                                  include_transactions)
         return Block(**result) if result is not None else None
 
-    def get_block_transaction_count_by_hash(self, hash):
+    async def get_block_transaction_count_by_hash(self, hash):
         """
         Returns the number of transactions in a block from a block matching
         the given block hash.
@@ -288,9 +301,9 @@ class NimiqClient:
             block was found.
         :rtype: int or None
         """
-        return self._call("getBlockTransactionCountByHash", hash)
+        return await self._call("getBlockTransactionCountByHash", hash)
 
-    def get_block_transaction_count_by_number(self, height):
+    async def get_block_transaction_count_by_number(self, height):
         """
         Returns the number of transactions in a block matching the given block
         number.
@@ -301,18 +314,28 @@ class NimiqClient:
             block was found.
         :rtype: int or None
         """
-        return self._call("getBlockTransactionCountByNumber", height)
+        return await self._call("getBlockTransactionCountByNumber", height)
 
-    def get_current_slashed_slots(self):
+    def get_callbacks(self):
+        """
+        Returns a dictionary containing all callbacks that the client can call
+        when an RPC request is received.
+
+        :return: Dictionary containing all RPC subscription IDs.
+        :rtype: dict
+        """
+        return self.callbacks
+
+    async def get_current_slashed_slots(self):
         """
         Returns the current slashed slots.
 
         :return: Current slashed slots.
         :rtype: SlashedSlots
         """
-        return SlashedSlots(**self.call("getCurrentSlashedSlots"))
+        return SlashedSlots(**await self._call("getCurrentSlashedSlots"))
 
-    def get_inherents_by_batch_number(self, batch_number):
+    async def get_inherents_by_batch_number(self, batch_number):
         """
         Returns information about inherents by batch number.
 
@@ -322,14 +345,14 @@ class NimiqClient:
         :return: A list of inherent objects.
         :rtype: List of (Inherent)
         """
-        result = self._call(
+        result = await self._call(
             "getInherentsByBatchNumber", batch_number)
         if result is not None:
             return [Inherent(**inherent) for inherent in result]
         else:
             return []
 
-    def get_inherents_by_block_number(self, height):
+    async def get_inherents_by_block_number(self, height):
         """
         Returns information about inherents by block number.
 
@@ -338,32 +361,42 @@ class NimiqClient:
         :return: A list of inherent objects.
         :rtype: List of (Inherent)
         """
-        result = self._call(
+        result = await self._call(
             "getInherentsByBlockNumber", height)
         if result is not None:
             return [Inherent(**inherent) for inherent in result]
         else:
             return []
 
-    def get_parked_validators(self):
+    async def get_parked_validators(self):
         """
         Returns the set of current parked validators.
 
         :return: Set of current parked validators.
         :rtype: ParkedValidators
         """
-        return ParkedValidators(**self.call("getParkedValidators"))
+        return ParkedValidators(**await self._call("getParkedValidators"))
 
-    def get_previous_slashed_slots(self):
+    async def get_previous_slashed_slots(self):
         """
         Returns the previous slashed slots.
 
         :return: Previous slashed slots.
         :rtype: SlashedSlots
         """
-        return SlashedSlots(**self.call("getPreviousSlashedSlots"))
+        return SlashedSlots(**await self._call("getPreviousSlashedSlots"))
 
-    def get_raw_transaction_info(self, transaction):
+    def get_subscriptions(self):
+        """
+        Returns a dictionary containing all RPC subscription IDs the client
+        has subscribed to.
+
+        :return: Dictionary containing all RPC subscription IDs.
+        :rtype: dict
+        """
+        return self.subscriptions
+
+    async def get_raw_transaction_info(self, transaction):
         """
         Deserializes hex-encoded transaction and returns a transaction object.
 
@@ -372,9 +405,10 @@ class NimiqClient:
         :return: The transaction object.
         :rtype: Transaction
         """
-        return Transaction(**self._call("getRawTransactionInfo", transaction))
+        return Transaction(
+            **await self._call("getRawTransactionInfo", transaction))
 
-    def get_staker_by_address(self, address):
+    async def get_staker_by_address(self, address):
         """
         Gets a staker using its address
 
@@ -383,10 +417,10 @@ class NimiqClient:
         :return: The staker object.
         :rtype: Staker
         """
-        return Staker(**self._call("getStakerByAddress", address))
+        return Staker(**await self._call("getStakerByAddress", address))
 
-    def get_transactions_by_address(self, address,
-                                    number_of_transactions=None):
+    async def get_transactions_by_address(self, address,
+                                          number_of_transactions=None):
         """
         Returns the latest transactions successfully performed by or for an
         address. Note that this information might change when blocks are
@@ -401,13 +435,13 @@ class NimiqClient:
         :rtype: list of (Transaction)
         """
         result = None
-        result = self._call(
+        result = await self._call(
             "getTransactionsByAddress", address, number_of_transactions
         )
         return [Transaction(**tx) for tx in result]
 
-    def get_transaction_hashes_by_address(self, address,
-                                          number_of_transactions=None):
+    async def get_transaction_hashes_by_address(self, address,
+                                                number_of_transactions=None):
         """
         Returns the hashes of the latest transactions successfully performed
         by or for an address. Note that this information might change when
@@ -423,12 +457,12 @@ class NimiqClient:
         :rtype: list of (str)
         """
         result = None
-        result = self._call(
+        result = await self._call(
             "getTransactionHashesByAddress", address,
             number_of_transactions)
         return result
 
-    def get_transactions_by_batch_number(self, batch_number):
+    async def get_transactions_by_batch_number(self, batch_number):
         """
         Returns information about transactions by batch number.
 
@@ -438,14 +472,14 @@ class NimiqClient:
         :return: A list of transaction objects.
         :rtype: List of (Transaction)
         """
-        result = self._call(
+        result = await self._call(
             "getTransactionsByBatchNumber", batch_number)
         if result is not None:
             return [Transaction(**tx) for tx in result]
         else:
             return []
 
-    def get_transactions_by_block_number(self, height):
+    async def get_transactions_by_block_number(self, height):
         """
         Returns information about transactions by block number.
 
@@ -454,14 +488,14 @@ class NimiqClient:
         :return: A list of transaction objects.
         :rtype: List of (Transaction)
         """
-        result = self._call(
+        result = await self._call(
             "getTransactionsByBlockNumber", height)
         if result is not None:
             return [Transaction(**tx) for tx in result]
         else:
             return []
 
-    def get_transaction_by_hash(self, hash):
+    async def get_transaction_by_hash(self, hash):
         """
         Returns the information about a transaction requested by transaction
         hash.
@@ -471,19 +505,19 @@ class NimiqClient:
         :return: A transaction object or None when no transaction was found.
         :rtype: Transaction or None
         """
-        result = self._call("getTransactionByHash", hash)
+        result = await self._call("getTransactionByHash", hash)
         return Transaction(**result) if result is not None else None
 
-    def get_validator_address(self):
+    async def get_validator_address(self):
         """
         Returns the address of the current validator.
 
         :return: Address of the current validator.
         :rtype: str or None
         """
-        return self._call("getAddress")
+        return await self._call("getAddress")
 
-    def get_validator_by_address(self, address, include_stakers=None):
+    async def get_validator_by_address(self, address, include_stakers=None):
         """
         Returns a validator given its address
 
@@ -496,30 +530,41 @@ class NimiqClient:
         :rtype: Validator
         """
         result = None
-        result = self._call(
+        result = await self._call(
             "getValidatorByAddress", address, include_stakers
         )
         return Validator(**result) if result is not None else None
 
-    def get_validator_signing_key(self):
+    async def get_validator_signing_key(self):
         """
         Returns the signing key of the current validator.
 
         :return: Signing key of the current validator.
         :rtype: str or None
         """
-        return self._call("getSigningKey")
+        return await self._call("getSigningKey")
 
-    def get_validator_voting_key(self):
+    async def get_validator_voting_key(self):
         """
         Returns the voting key of the current validator.
 
         :return: Voting key of the current validator.
         :rtype: str or None
         """
-        return self._call("getVotingKey")
+        return await self._call("getVotingKey")
 
-    def importRawKey(self, private_key, passphrase=None):
+    async def head_subscribe(self,
+                             callback: Callable[[Any, str], Awaitable[None]]):
+        """
+        Subscribes to blocks produced by the server and calls a callback on
+        each of the blocks.
+
+        :param callback: Callback to be called on each block.
+        :param type: Callable[[str], None]
+        """
+        await self._call_and_subscribe(callback, "headSubscribe")
+
+    async def importRawKey(self, private_key, passphrase=None):
         """
         Imports a raw key into the wallet.
 
@@ -530,9 +575,9 @@ class NimiqClient:
         :return: Address of the imported raw key.
         :rtype: str
         """
-        return self._call("importRawKey", private_key, passphrase)
+        return await self._call("importRawKey", private_key, passphrase)
 
-    def is_account_imported(self, address):
+    async def is_account_imported(self, address):
         """
         Returns wether an account has been imported into the wallet.
 
@@ -541,9 +586,9 @@ class NimiqClient:
         :return: Bool indicating wether the account has been imported.
         :rtype: bool
         """
-        return self._call("isAccountImported", address)
+        return await self._call("isAccountImported", address)
 
-    def is_account_unlocked(self, address):
+    async def is_account_unlocked(self, address):
         """
         Returns wether an account has been unlocked in the wallet.
 
@@ -552,18 +597,18 @@ class NimiqClient:
         :return: Bool indicating wether the account has been unlocked.
         :rtype: bool
         """
-        return self._call("isAccountUnlocked", address)
+        return await self._call("isAccountUnlocked", address)
 
-    def lock_account(self, address):
+    async def lock_account(self, address):
         """
         Locks an account in the wallet
 
         :param address: Address of the account to be locked.
         :type address: sre
         """
-        self._call("lockAccount", address)
+        await self._call("lockAccount", address)
 
-    def mempool(self):
+    async def mempool(self):
         """
         Returns information on the current mempool situation. This will
         provide an overview of the number of transactions sorted into buckets
@@ -572,10 +617,10 @@ class NimiqClient:
         :return: Mempool information.
         :rtype: MempoolInfo
         """
-        result = self._call("mempool")
+        result = await self._call("mempool")
         return MempoolInfo(**result)
 
-    def mempool_content(self, include_transactions=None):
+    async def mempool_content(self, include_transactions=None):
         """
         Returns transactions that are currently in the mempool.
 
@@ -587,19 +632,19 @@ class NimiqClient:
         :rtype: list of(Transaction or str)
         """
         result = None
-        result = self._call("mempoolContent", include_transactions)
+        result = await self._call("mempoolContent", include_transactions)
         return [tx if type(tx) is str else Transaction(**tx) for tx in result]
 
-    def min_fee_per_byte(self):
+    async def min_fee_per_byte(self):
         """
         Returns the minimum fee per byte.
 
         :return: The new minimum fee per byte.
         :rtype: int
         """
-        return self._call("getMinFeePerByte")
+        return await self._call("getMinFeePerByte")
 
-    def peer_count(self):
+    async def peer_count(self):
         """
 
         Returns number of peers currently connected to the client.
@@ -607,27 +652,27 @@ class NimiqClient:
         :return: Number of connected peers.
         :rtype: int
         """
-        return self._call("getPeerCount")
+        return await self._call("getPeerCount")
 
-    def peer_id(self):
+    async def peer_id(self):
         """
         Returns the peer ID of the running client.
 
         :return: Peer ID of the running client.
         :rtype: string
         """
-        return self._call("getPeerId")
+        return await self._call("getPeerId")
 
-    def peer_list(self):
+    async def peer_list(self):
         """
         Returns list of peers known to the client.
 
         :return: The list of peers.
         :rtype: list of(Peer)
         """
-        return [Peer(**peer) for peer in self._call("getPeerList")]
+        return [Peer(**peer) for peer in await self._call("getPeerList")]
 
-    def peer_state(self, address):
+    async def peer_state(self, address):
         """
         Returns the state of the peer.
 
@@ -636,9 +681,9 @@ class NimiqClient:
         :return: The current state of the peer.
         :rtype: Peer
         """
-        return Peer(**self._call("peerState", address))
+        return Peer(**await self._call("peerState", address))
 
-    def set_peer_state(self, address, command=None):
+    async def set_peer_state(self, address, command=None):
         """
         Returns the state of the peer.
 
@@ -649,9 +694,9 @@ class NimiqClient:
         :return: The new state of the peer.
         :rtype: Peer
         """
-        return Peer(**self._call("peerState", address, command))
+        return Peer(**await self._call("peerState", address, command))
 
-    def send_raw_transaction(self, transaction):
+    async def send_raw_transaction(self, transaction):
         """
         Sends a signed message call transaction or a contract creation, if the
         data field contains code.
@@ -661,10 +706,10 @@ class NimiqClient:
         :return: The Hex-encoded transaction hash.
         :rtype: str
         """
-        return self._call("sendRawTransaction", transaction)
+        return await self._call("sendRawTransaction", transaction)
 
-    def send_basic_transaction(self, address, recipient, value, fee,
-                               validityStartHeight):
+    async def send_basic_transaction(self, address, recipient, value, fee,
+                                     validityStartHeight):
         """
         Creates and send a new basic transaction
 
@@ -682,10 +727,11 @@ class NimiqClient:
         :return: The Hex-encoded transaction hash.
         :rtype: str
         """
-        return self._call("sendBasicTransaction", address, recipient, value,
-                          fee, validityStartHeight)
+        return await self._call(
+            "sendBasicTransaction", address, recipient, value, fee,
+            validityStartHeight)
 
-    def unlock_account(self, address, passphrase=None, duration=None):
+    async def unlock_account(self, address, passphrase=None, duration=None):
         """
         Unlocks a wallet account
 
@@ -696,4 +742,4 @@ class NimiqClient:
         :param duration: Optional duration in which the account is unlocked.
         :type duration: int
         """
-        self._call("unlockAccount", address, passphrase, duration)
+        await self._call("unlockAccount", address, passphrase, duration)
