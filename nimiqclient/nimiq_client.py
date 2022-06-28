@@ -723,7 +723,7 @@ class NimiqClient:
         :type fee: int
         :param validityStartHeight: The validity start height for the
             transaction.
-        :type validityStartHeight: int
+        :type validityStartHeight: int | str
         :return: The Hex-encoded transaction hash.
         :rtype: str
         """
@@ -731,15 +731,15 @@ class NimiqClient:
             "sendBasicTransaction", address, recipient, value, fee,
             validityStartHeight)
 
-    async def send_stake_transaction(self, address, recipient, value, fee,
+    async def send_stake_transaction(self, address, staker, value, fee,
                                      validityStartHeight):
         """
         Creates and sends a stake transaction to add stake to an existing staker
 
         :param address: The sender address.
         :type address: str
-        :param recipient: The staker address.
-        :type recipient: str
+        :param staker: The staker address.
+        :type staker: str
         :param value: The value of the transaction.
         :type value: int
         :param fee: The fee of the transaction.
@@ -751,7 +751,7 @@ class NimiqClient:
         :rtype: str
         """
         return await self._call(
-            "sendBasicTransaction", address, recipient, value, fee,
+            "sendStakeTransaction", address, staker, value, fee,
             validityStartHeight)
 
     async def unlock_account(self, address, passphrase=None, duration=None):
