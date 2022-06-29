@@ -245,18 +245,6 @@ class NimiqClient:
         """
         return await self._call("getActiveValidators")
 
-    async def get_balance(self, address):
-        """
-        Returns the balance of the account of given address.
-
-        :param address: Address to check for balance.
-        :type address: str
-        :return: The current balance at the specified address (in smallest
-            unit).
-        :rtype: int
-        """
-        return await self._call("getBalance", address)
-
     async def get_block_by_hash(self, hash, include_transactions=None):
         """
         Returns information about a block by hash.
@@ -734,7 +722,8 @@ class NimiqClient:
     async def send_stake_transaction(self, address, staker, value, fee,
                                      validityStartHeight):
         """
-        Creates and sends a stake transaction to add stake to an existing staker
+        Creates and sends a stake transaction to add stake to an existing
+        staker
 
         :param address: The sender address.
         :type address: str

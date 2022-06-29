@@ -4,7 +4,7 @@ import asyncio
 
 async def run_client():
     async with NimiqClient(
-        scheme="ws", host="127.0.0.1", port=9201
+        scheme="http", host="127.0.0.1", port=9201
     ) as client:
         try:
             # Get consensus
