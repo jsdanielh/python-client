@@ -710,8 +710,9 @@ class NimiqClient:
         :param fee: The fee of the transaction.
         :type fee: int
         :param validityStartHeight: The validity start height for the
-            transaction.
-        :type validityStartHeight: int | str
+            transaction. Could be a string containing a block number
+            (e.g."1000") or an offset (e.g. "+10").
+        :type validityStartHeight: str
         :return: The Hex-encoded transaction hash.
         :rtype: str
         """
@@ -734,8 +735,9 @@ class NimiqClient:
         :param fee: The fee of the transaction.
         :type fee: int
         :param validityStartHeight: The validity start height for the
-            transaction.
-        :type validityStartHeight: int | str
+            transaction. Could be a string containing a block number
+            (e.g."1000") or an offset (e.g. "+10").
+        :type validityStartHeight: str
         :return: The Hex-encoded transaction hash.
         :rtype: str
         """
