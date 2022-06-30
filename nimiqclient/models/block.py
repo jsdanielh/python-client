@@ -71,6 +71,24 @@ class Block:
         self.stateHash = stateHash
         self.historyHash = historyHash
 
+    @staticmethod
+    def get_block(data):
+        """
+        Get the specific block type from the dictionary data.
+
+        :param data: The dictionary containing the data.
+        :type data: dict
+        :return: Block object.
+        :rtype: Block or MicroBlock or MacroBlock
+        """
+        type = data.get("type")
+        if type == BlockType.MicroBlock:
+            return MicroBlock(**data)
+        elif type == BlockType.MacroBlock:
+            return MacroBlock(**data)
+        else:
+            return Block(**data)
+
 
 class MicroBlock(Block):
     """

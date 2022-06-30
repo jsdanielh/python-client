@@ -2,9 +2,8 @@ from nimiqclient import *
 import asyncio
 
 
-async def process_block(client, hash):
+async def process_block(client, hash, _kwargs):
     block = await client.get_block_by_hash(hash, False)
-    # Nothing to do when the block is a micro block
     if block.type == "micro":
         print("Received micro block #{}: {}".format(block.number, hash))
     else:
@@ -23,7 +22,7 @@ async def run_client():
             if consensus:
                 # Get accounts
                 print("Subscribing to new blocks ...")
-                await client.head_subscribe(process_block)
+                await client.subscribe_for_head_block_hash(process_block)
 
         except InternalErrorException as error:
             print("Got error when trying to connect to the RPC server: {0}"

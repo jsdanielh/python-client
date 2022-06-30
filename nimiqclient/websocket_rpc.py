@@ -111,19 +111,82 @@ class NimiqRPCMethods(RpcMethodsBase):
         super().__init__()
         self.client = client
 
-    """
-    Nimiq Websocket RPC method for subscribing for new blocks
+    async def subscribeForHeadBlockHash(self, subscription, result):
+        """
+        Nimiq Websocket RPC method for subscribing for new block's hash
 
-    :param subscription: Subscription ID as provided by the server.
-    :type subscription: int
-    :param result: Block hash as provided by the server.
-    :type result: str
-    """
-    async def headSubscribe(self, subscription, result):
+        :param subscription: Subscription ID as provided by the server.
+        :type subscription: int
+        :param result: Block hash as provided by the server.
+        :type result: str
+        """
         callbacks = self.client.get_callbacks()
         subscriptions = self.client.get_subscriptions()
-        if 'headSubscribe' in callbacks and 'headSubscribe' in subscriptions:
-            if subscriptions['headSubscribe'] == subscription:
+        if ('subscribeForHeadBlockHash' in callbacks and
+                'subscribeForHeadBlockHash' in subscriptions):
+            if subscriptions['subscribeForHeadBlockHash'] == subscription:
                 asyncio.ensure_future(
-                    callbacks['headSubscribe'](self.client, result))
+                    callbacks['subscribeForHeadBlockHash'].call(self.client,
+                                                                result))
+        return NoResponse
+
+    async def subscribeForHeadBlock(self, subscription, result):
+        """
+        Nimiq Websocket RPC method for subscribing for new blocks
+
+        :param subscription: Subscription ID as provided by the server.
+        :type subscription: int
+        :param result: Block provided by the server.
+        :type result: Block
+        """
+        callbacks = self.client.get_callbacks()
+        subscriptions = self.client.get_subscriptions()
+        if ('subscribeForHeadBlock' in callbacks and
+                'subscribeForHeadBlock' in subscriptions):
+            if subscriptions['subscribeForHeadBlock'] == subscription:
+                asyncio.ensure_future(
+                    callbacks['subscribeForHeadBlock'].call(self.client,
+                                                            result))
+        return NoResponse
+
+    async def subscribeForValidatorElectionByAddress(self, subscription,
+                                                     result):
+        """
+        Nimiq Websocket RPC method for subscribing for new validator election
+
+        :param subscription: Subscription ID as provided by the server.
+        :type subscription: int
+        :param result: Blockchain state of a Validator.
+        :type result: BlockchainState(Validator)
+        """
+        callbacks = self.client.get_callbacks()
+        subscriptions = self.client.get_subscriptions()
+        if ('subscribeForValidatorElectionByAddress' in callbacks and
+                'subscribeForValidatorElectionByAddress' in subscriptions):
+            if (subscriptions['subscribeForValidatorElectionByAddress'] ==
+                    subscription):
+                asyncio.ensure_future(
+                    callbacks['subscribeForValidatorElectionByAddress'].call(
+                        self.client, result))
+        return NoResponse
+
+    async def subscribeForLogsByAddressesAndTypes(self, subscription, result):
+        """
+        Nimiq Websocket RPC method for subscribing for logs by type and
+        addresses
+
+        :param subscription: Subscription ID as provided by the server.
+        :type subscription: int
+        :param result: Log obtained from the Server.
+        :type result: BlockLog
+        """
+        callbacks = self.client.get_callbacks()
+        subscriptions = self.client.get_subscriptions()
+        if ('subscribeForLogsByAddressesAndTypes' in callbacks and
+                'subscribeForLogsByAddressesAndTypes' in subscriptions):
+            if (subscriptions['subscribeForLogsByAddressesAndTypes'] ==
+                    subscription):
+                asyncio.ensure_future(
+                    callbacks['subscribeForLogsByAddressesAndTypes'].call(
+                        self.client, result))
         return NoResponse

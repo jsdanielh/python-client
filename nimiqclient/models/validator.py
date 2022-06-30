@@ -1,3 +1,4 @@
+from .blockchain import BlockchainState
 from .staker import Staker
 
 __all__ = ["ParkedValidators", "Validator"]
@@ -9,8 +10,6 @@ class Validator:
 
     :param address: Address of the validator.
     :type address: str
-    :param warmAddress: Warm address of the validator.
-    :type warmAddress: str
     :param signingKey: Signing key of the validator.
     :type signingKey: str
     :param votingKey: Voting key of the validator.
@@ -21,12 +20,21 @@ class Validator:
     :type balance: int
     :param numStakers: Number of stakers for this validator.
     :type numStakers: int
+    :param blockNumber: Block number from which this validator was fetch for.
+    :type blockNumber: int
+    :param blockHash: Block hash from which this validator was fetch for.
+    :type blockHash: str
+    :param inactivityFlag: Optional inactivity flag.
+    :type inactivityFlag: bool
+    :param signalData: Signal data for the validator.
+    :type signalData: str
     :param stakers: List of stakers represented by a Staker object.
     :type stakers: list of(Staker)
     """
 
     def __init__(self, address, signingKey, votingKey, rewardAddress, balance,
-                 numStakers, inactivityFlag=None, signalData=None, stakers={}):
+                 numStakers, blockNumber, blockHash, inactivityFlag=None,
+                 signalData=None, stakers={}):
         self.address = address
         self.signingKey = signingKey
         self.votingKey = votingKey
@@ -38,13 +46,15 @@ class Validator:
         staker_objs = []
         if type(stakers) is dict:
             for address, balance in stakers.items():
-                staker_objs.append(Staker(address, balance))
+                staker_objs.append(
+                    Staker(address, balance, blockNumber, blockHash))
         else:
             from ..nimiq_client import InternalErrorException
             raise InternalErrorException(
                 "Couldn't parse Stakers {0}".format(stakers)
             )
         self.stakers = staker_objs
+        self.blockchainState = BlockchainState(blockNumber, blockHash)
 
 
 class ParkedValidators:

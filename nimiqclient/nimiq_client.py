@@ -1,5 +1,8 @@
+from .callback import Callback
 from .models.account import *
 from .models.block import *
+from .models.blockchain import *
+from .models.block_log import *
 from .models.inherent import *
 from .models.mempool import *
 from .models.node import *
@@ -10,7 +13,7 @@ from .models.validator import *
 from .websocket_rpc import NimiqRPCMethods, NimiqSerializer
 from .error_exception import InternalErrorException, RemoteErrorException
 
-from typing import Any, Awaitable, Callable
+from typing import Any, Awaitable, Callable, Dict
 from fastapi_websocket_rpc import WebSocketRpcClient
 import json
 import requests
@@ -120,49 +123,17 @@ class NimiqClient:
                 error.get("message"), error.get("code"))
         return resp_object.get("result")
 
-    async def _call_and_subscribe(self, callback, method, *args):
+    async def _call_and_subscribe(self, callback, kwargs, decoder, method,
+                                  *args):
         if self.websocket:
-            self.callbacks[method] = callback
+            callback_obj = Callback(callback, kwargs, decoder)
+            self.callbacks[method] = callback_obj
             subscription = await self._call(method, *args)
             self.subscriptions[method] = subscription
         else:
             raise InternalErrorException(
                 "Protocol {} doesn't support RPC subscription".format(
                     self.scheme))
-
-    def _get_account(self, data):
-        """
-        Get the specific account type from the dictionary data.
-
-        :param data: The dictionary containing the data.
-        :type data: dict
-        :return: Account object.
-        :rtype: Account or VestingContract or HTLC
-        """
-        type = data.get("type")
-        if type == AccountType.HTLC:
-            return HTLC(**data)
-        elif type == AccountType.VESTING:
-            return VestingContract(**data)
-        else:
-            return Account(**data)
-
-    def _get_block(self, data):
-        """
-        Get the specific block type from the dictionary data.
-
-        :param data: The dictionary containing the data.
-        :type data: dict
-        :return: Block object.
-        :rtype: Block or MicroBlock or MacroBlock
-        """
-        type = data.get("type")
-        if type == BlockType.MicroBlock:
-            return MicroBlock(**data)
-        elif type == BlockType.MacroBlock:
-            return MacroBlock(**data)
-        else:
-            return Block(**data)
 
     async def accounts(self):
         """
@@ -232,7 +203,7 @@ class NimiqClient:
             account for non-existing accounts.
         :rtype: Account or VestingContract or HTLC
         """
-        return self._get_account(
+        return Account.get_account(
             await self._call("getAccountByAddress", address))
 
     async def get_active_validators(self):
@@ -260,7 +231,7 @@ class NimiqClient:
         """
         result = None
         result = await self._call("getBlockByHash", hash, include_transactions)
-        return self._get_block(result) if result is not None else None
+        return Block.get_block(result) if result is not None else None
 
     async def get_block_by_number(self, height, include_transactions=None):
         """
@@ -542,23 +513,12 @@ class NimiqClient:
         """
         return await self._call("getVotingKey")
 
-    async def head_subscribe(self,
-                             callback: Callable[[Any, str], Awaitable[None]]):
-        """
-        Subscribes to blocks produced by the server and calls a callback on
-        each of the blocks.
-
-        :param callback: Callback to be called on each block.
-        :param type: Callable[[str], None]
-        """
-        await self._call_and_subscribe(callback, "headSubscribe")
-
     async def importRawKey(self, private_key, passphrase=None):
         """
         Imports a raw key into the wallet.
 
         :param private_key: Private key to be imported.
-        :type address: str
+        :type private_key: str
         :param passphrase: Optional passphrase to add to the private key.
         :type passphrase: str
         :return: Address of the imported raw key.
@@ -745,6 +705,96 @@ class NimiqClient:
         return await self._call(
             "sendStakeTransaction", address, staker, value, fee,
             validityStartHeight)
+
+    async def subscribe_for_head_block(
+            self,
+            callback: Callable[[Any, Block, Dict], Awaitable[None]],
+            include_transactions=None,
+            **kwargs):
+        """
+        Subscribes to blocks produced by the server and calls a callback on
+        each of the block.
+
+        :param callback: Callback to be called on each block.
+        :type callback: Callable[[NimiqClient, Block, Dict], Awaitable[None]]
+        :param kwargs: Callback extra arguments that will be passed when the
+            callback is called
+        :type kwargs: dict
+        """
+        await self._call_and_subscribe(callback,
+                                       kwargs,
+                                       Block.get_block,
+                                       "subscribeForHeadBlock",
+                                       include_transactions)
+
+    async def subscribe_for_head_block_hash(
+            self,
+            callback: Callable[[Any, str, Dict], Awaitable[None]],
+            **kwargs):
+        """
+        Subscribes to blocks produced by the server and calls a callback on
+        each of the hash of the block.
+
+        :param callback: Callback to be called on each block.
+        :type callback: Callable[[NimiqClient, str, Dict], Awaitable[None]]
+        :param kwargs: Callback extra arguments that will be passed when the
+            callback is called
+        :type kwargs: dict
+        """
+        await self._call_and_subscribe(callback, kwargs, None,
+                                       "subscribeForHeadBlockHash")
+
+    async def subscribe_for_logs_by_addresses_and_types(
+            self,
+            addresses,
+            log_types,
+            callback: Callable[[Any, BlockLog, Dict], Awaitable[None]],
+            **kwargs):
+        """
+        Subscribes to block logs by type and addresses produced by the server
+        and calls a callback on each each of the logs.
+
+        :param addresses: List of addresses to subscribe to.
+        :type addresses: List of (str)
+        :param log_types: List of log types to subscribe to.
+        :type log_types: List of (str)
+        :param callback: Callback to be called on each block log.
+        :type callback: Callable[[NimiqClient, BlockLog, Dict],
+            Awaitable[None]]
+        :param kwargs: Callback extra arguments that will be passed when the
+            callback is called
+        :type kwargs: dict
+        """
+        await self._call_and_subscribe(callback,
+                                       kwargs,
+                                       BlockLog.get_block_log,
+                                       "subscribeForLogsByAddressesAndTypes",
+                                       addresses,
+                                       log_types)
+
+    async def subscribe_for_validator_election_by_address(
+            self,
+            address,
+            callback: Callable[[Any, Validator, Dict], Awaitable[None]],
+            **kwargs):
+        """
+        Subscribes to validator election events and calls a callback on each
+        each of the validators received.
+
+        :param address: Validator address to subscribe for.
+        :type address: str
+        :param callback: Callback to be called on each validator.
+        :type callback: Callable[[Any, Validator, Dict], Awaitable[None]]
+        :param kwargs: Callback extra arguments that will be passed when the
+            callback is called
+        :type kwargs: dict
+        """
+        await self._call_and_subscribe(
+            callback,
+            kwargs,
+            Validator,
+            "subscribeForValidatorElectionByAddress",
+            address)
 
     async def unlock_account(self, address, passphrase=None, duration=None):
         """

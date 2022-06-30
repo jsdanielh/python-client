@@ -1,6 +1,3 @@
-from .account import AccountType
-import json
-
 __all__ = ["Transaction"]
 
 

@@ -34,6 +34,24 @@ class Account:
         self.balance = balance
         self.type = type
 
+    @staticmethod
+    def get_account(data):
+        """
+        Get the specific account type from the dictionary data.
+
+        :param data: The dictionary containing the data.
+        :type data: dict
+        :return: Account object.
+        :rtype: Account or VestingContract or HTLC
+        """
+        type = data.get("type")
+        if type == AccountType.HTLC:
+            return HTLC(**data)
+        elif type == AccountType.VESTING:
+            return VestingContract(**data)
+        else:
+            return Account(**data)
+
 
 class VestingContract(Account):
     """
