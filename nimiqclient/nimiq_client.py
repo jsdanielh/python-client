@@ -54,7 +54,8 @@ class NimiqClient:
                 self.url,
                 NimiqRPCMethods(self),
                 serializing_socket_cls=NimiqSerializer,
-                default_response_timeout=5)
+                default_response_timeout=5,
+                ping_interval=None)
             # Disable ping messages since the Nimiq server doesn't support it
             self.session.MAX_CONNECTION_ATTEMPTS = 0
         else:

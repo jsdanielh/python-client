@@ -13,7 +13,7 @@ __all__ = ["NimiqRPCMethods", "NimiqSerializer"]
 
 class NimiqSerializer(JsonSerializingWebSocket):
     """
-    Nimiq Serializer for `RpcMessage`s of fastapi_websocket_rpc .
+    Nimiq Serializer for `RpcMessage`s of fastapi_websocket_rpc.
 
     :param websocket: Web socket as created by the RPC client.
     :type websocket: SimpleWebSocket
@@ -55,11 +55,9 @@ class NimiqSerializer(JsonSerializingWebSocket):
 
         error = msg.get("error")
         if error is not None:
-            print("Received error code {} from server: {}".format(
-                error.get("code"), error.get("message")))
-            # TODO enhance error reporting
-            # raise RemoteErrorException(
-            #    error.get("message"), error.get("code"))
+            raise RemoteErrorException(
+                error.get("message") + ":" + error.get("data"),
+                error.get("code"))
 
         if 'result' in msg:
             response = RpcResponse(result=msg['result'], call_id=msg['id'])
