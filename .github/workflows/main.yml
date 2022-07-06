@@ -12,7 +12,6 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-python@v1
-    - uses: pre-commit/action@v2.0.0
 
   build:
 
@@ -20,12 +19,12 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [2.7, 3.5, 3.6, 3.7, 3.8]
+        python-version: ['3.8', '3.9', '3.10']
 
     steps:
     - uses: actions/checkout@main
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -33,10 +32,40 @@ jobs:
         pip install -U pip
         pip install -r requirements.txt
         pip install .
+        pip install pycodestyle
         pip install coveralls
-    - name: Run tests
+    - name: Check code style
       run: |
-        coverage run --source=nimiqclient setup.py test
-    - uses: AndreMiras/coveralls-python-action@develop
+        pycodestyle examples nimiqclient
+#    - name: Run tests
+#      run: |
+#        coverage run --source=nimiqclient setup.py test
+#    - uses: AndreMiras/coveralls-python-action@develop
+#      with:
+#        github-token: ${{ secrets.GITHUB_TOKEN }}
+  
+  documentation:
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@main
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        python-version: '3.8'
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+    - name: Build documentation
+      run: |
+        make dirhtml -C docs
+    - name: Deploy documentation
+      uses: peaceiris/actions-gh-pages@v3
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+      with:
+        publish_branch: gh-pages
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: docs/_build/dirhtml
+        force_orphan: true

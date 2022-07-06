@@ -29,7 +29,7 @@ default values in the Nimiq node.
 
 ## API
 
-The complete API documentation is available [here](https://github.com/jsdanielh/python-client).
+The complete API documentation is available [here](https://jsdanielh.github.io/python-client/).
 
 Check out the [Nimiq RPC specs](https://github.com/nimiq/core-rs-albatross/tree/albatross/rpc-server/src/dispatchers)
 for the behind-the-scenes RPC calls.

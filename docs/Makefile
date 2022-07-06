@@ -6,7 +6,7 @@
 SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = source
-BUILDDIR      = build
+BUILDDIR      = _build
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -22,7 +22,7 @@ help:
 
 # Convert .py to .ipynb (don't seem to need to --execute? perhaps sphinx-build does it...), then build html:
 %: Makefile
-	rm -rf build
+	rm -rf _build
 	rm -fr _autosummary
 	rm -fr _modules
 	rm -fr _static
@@ -32,5 +32,3 @@ help:
 	rm -f *.js
 	rm -f objects.inv
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
-	mv build/html/* .
-	rm -fr build

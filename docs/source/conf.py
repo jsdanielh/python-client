@@ -9,12 +9,13 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
+import warnings
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("../.."))  # Source code dir relative to this file
+# Source code dir relative to this file
+sys.path.insert(0, os.path.abspath("../.."))
 # Temp. workaround for https://github.com/agronholm/sphinx-autodoc-typehints/issues/133
-import warnings
 
 warnings.filterwarnings(
     "ignore", message="sphinx.util.inspect.Signature\(\) is deprecated"
@@ -22,8 +23,8 @@ warnings.filterwarnings(
 
 # -- Project information -----------------------------------------------------
 
-project = "Nimiq Python Client"
-author = "jamleed"
+project = "Albatross Nimiq Python Client"
+author = "jsdanielh"
 
 # The full version, including alpha/beta/rc tags
 release = "1.0"
@@ -36,8 +37,10 @@ release = "1.0"
 extensions = [
     "sphinx.ext.autodoc",  # Core Sphinx library for auto html doc generation from docstrings
     "sphinx.ext.autosummary",  # Create neat summary tables for modules/classes/methods etc
-    "sphinx.ext.viewcode",  # Add a link to the Python source code for classes, functions etc.
-    "sphinx_autodoc_typehints",  # Automatically document param types (less noise in class signature)
+    # Add a link to the Python source code for classes, functions etc.
+    "sphinx.ext.viewcode",
+    # Automatically document param types (less noise in class signature)
+    "sphinx_autodoc_typehints",
     "m2r2",  # m2r2 converts a markdown file to a valid rst format.
 ]
 
@@ -49,7 +52,8 @@ autoclass_content = "both"  # Add __init__ doc (ie. params) to class summaries
 html_show_sourcelink = (
     False  # Remove 'view source code' from top of page (for html, not python)
 )
-autodoc_inherit_docstrings = True  # If no class summary, inherit base class summary
+# If no class summary, inherit base class summary
+autodoc_inherit_docstrings = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
