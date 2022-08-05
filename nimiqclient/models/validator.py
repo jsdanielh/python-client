@@ -34,7 +34,7 @@ class Validator:
 
     def __init__(self, address, signingKey, votingKey, rewardAddress, balance,
                  numStakers, blockNumber, blockHash, inactivityFlag=None,
-                 signalData=None, stakers={}):
+                 signalData=None, stakers=[]):
         self.address = address
         self.signingKey = signingKey
         self.votingKey = votingKey
@@ -44,10 +44,11 @@ class Validator:
         self.inactivityFlag = inactivityFlag
         self.signalData = signalData
         staker_objs = []
-        if type(stakers) is dict:
-            for address, balance in stakers.items():
+        if type(stakers) is list:
+            for staker in stakers:
                 staker_objs.append(
-                    Staker(address, balance, blockNumber, blockHash))
+                    Staker(staker['address'], staker['balance'], blockNumber,
+                           blockHash))
         else:
             from ..nimiq_client import InternalErrorException
             raise InternalErrorException(
