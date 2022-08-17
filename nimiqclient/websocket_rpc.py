@@ -125,7 +125,7 @@ class NimiqRPCMethods(RpcMethodsBase):
         if ('subscribeForHeadBlockHash' in callbacks and
                 'subscribeForHeadBlockHash' in subscriptions):
             if subscriptions['subscribeForHeadBlockHash'] == subscription:
-                asyncio.ensure_future(
+                asyncio.create_task(
                     callbacks['subscribeForHeadBlockHash'].call(self.client,
                                                                 result))
         return NoResponse
@@ -144,7 +144,7 @@ class NimiqRPCMethods(RpcMethodsBase):
         if ('subscribeForHeadBlock' in callbacks and
                 'subscribeForHeadBlock' in subscriptions):
             if subscriptions['subscribeForHeadBlock'] == subscription:
-                asyncio.ensure_future(
+                asyncio.create_task(
                     callbacks['subscribeForHeadBlock'].call(self.client,
                                                             result))
         return NoResponse
@@ -165,7 +165,7 @@ class NimiqRPCMethods(RpcMethodsBase):
                 'subscribeForValidatorElectionByAddress' in subscriptions):
             if (subscriptions['subscribeForValidatorElectionByAddress'] ==
                     subscription):
-                asyncio.ensure_future(
+                asyncio.create_task(
                     callbacks['subscribeForValidatorElectionByAddress'].call(
                         self.client, result))
         return NoResponse
@@ -186,7 +186,7 @@ class NimiqRPCMethods(RpcMethodsBase):
                 'subscribeForLogsByAddressesAndTypes' in subscriptions):
             if (subscriptions['subscribeForLogsByAddressesAndTypes'] ==
                     subscription):
-                asyncio.ensure_future(
+                asyncio.create_task(
                     callbacks['subscribeForLogsByAddressesAndTypes'].call(
                         self.client, result))
         return NoResponse
