@@ -110,6 +110,7 @@ class NimiqRPCMethods(RpcMethodsBase):
     def __init__(self, client):
         super().__init__()
         self.client = client
+        self.tasks = set()
 
     async def subscribeForHeadBlockHash(self, subscription, result):
         """
@@ -125,9 +126,11 @@ class NimiqRPCMethods(RpcMethodsBase):
         if ('subscribeForHeadBlockHash' in callbacks and
                 'subscribeForHeadBlockHash' in subscriptions):
             if subscriptions['subscribeForHeadBlockHash'] == subscription:
-                asyncio.create_task(
+                task = asyncio.create_task(
                     callbacks['subscribeForHeadBlockHash'].call(self.client,
                                                                 result))
+                self.tasks.add(task)
+                task.add_done_callback(self.tasks.discard)
         return NoResponse
 
     async def subscribeForHeadBlock(self, subscription, result):
@@ -144,9 +147,11 @@ class NimiqRPCMethods(RpcMethodsBase):
         if ('subscribeForHeadBlock' in callbacks and
                 'subscribeForHeadBlock' in subscriptions):
             if subscriptions['subscribeForHeadBlock'] == subscription:
-                asyncio.create_task(
+                task = asyncio.create_task(
                     callbacks['subscribeForHeadBlock'].call(self.client,
                                                             result))
+                self.tasks.add(task)
+                task.add_done_callback(self.tasks.discard)
         return NoResponse
 
     async def subscribeForValidatorElectionByAddress(self, subscription,
@@ -165,9 +170,11 @@ class NimiqRPCMethods(RpcMethodsBase):
                 'subscribeForValidatorElectionByAddress' in subscriptions):
             if (subscriptions['subscribeForValidatorElectionByAddress'] ==
                     subscription):
-                asyncio.create_task(
+                task = asyncio.create_task(
                     callbacks['subscribeForValidatorElectionByAddress'].call(
                         self.client, result))
+                self.tasks.add(task)
+                task.add_done_callback(self.tasks.discard)
         return NoResponse
 
     async def subscribeForLogsByAddressesAndTypes(self, subscription, result):
@@ -186,7 +193,9 @@ class NimiqRPCMethods(RpcMethodsBase):
                 'subscribeForLogsByAddressesAndTypes' in subscriptions):
             if (subscriptions['subscribeForLogsByAddressesAndTypes'] ==
                     subscription):
-                asyncio.create_task(
+                task = asyncio.create_task(
                     callbacks['subscribeForLogsByAddressesAndTypes'].call(
                         self.client, result))
+                self.tasks.add(task)
+                task.add_done_callback(self.tasks.discard)
         return NoResponse
