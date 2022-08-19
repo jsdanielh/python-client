@@ -23,6 +23,8 @@ __all__ = ["NimiqClient", "InternalErrorException", "RemoteErrorException"]
 
 
 class NimiqClient:
+
+    WS_RESPONSE_TIMEOUT = 5
     """
     API client for the Nimiq JSON RPC server.
 
@@ -57,7 +59,7 @@ class NimiqClient:
                 self.url,
                 NimiqRPCMethods(self),
                 serializing_socket_cls=NimiqSerializer,
-                default_response_timeout=5,
+                default_response_timeout=self.WS_RESPONSE_TIMEOUT,
                 ping_interval=None)
             # Disable ping messages since the Nimiq server doesn't support it
             self.session.MAX_CONNECTION_ATTEMPTS = 0
@@ -89,7 +91,8 @@ class NimiqClient:
         if self.websocket:
             result = await self.session.call(
                 method,
-                {i: k for i, k in enumerate(args)})
+                {i: k for i, k in enumerate(args)},
+                timeout=self.WS_RESPONSE_TIMEOUT)
             return result.result
 
         # increase the JSONRPC client request id
