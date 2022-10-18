@@ -2,7 +2,7 @@ from .transaction import Transaction
 
 
 __all__ = ["Block", "BlockType", "ForkProof", "MicroBlock", "MacroBlock",
-           "SlashedSlots"]
+           "Slot", "SlashedSlots"]
 
 
 class BlockType:
@@ -268,6 +268,24 @@ class MacroBlock(Block):
                         "Couldn't parse Transaction {0}".format(transaction)
                     )
         self.transactions = transactions
+
+
+class Slot:
+    """
+    Slot returned from the server
+
+    :param slotNumber: Slot number.
+    :type slotNumber: int
+    :param validator: Address of the validator this slot belongs to.
+    :type validator: str
+    :param publicKey: Public key of the validator this slot belongs to.
+    :type publicKey: str
+    """
+
+    def __init__(self, slotNumber, validator, publicKey):
+        self.slotNumber = slotNumber
+        self.validator_address = validator
+        self.validator_pk = publicKey
 
 
 class SlashedSlots:

@@ -1,4 +1,3 @@
-from .blockchain import BlockchainState
 from .staker import Staker
 
 __all__ = ["ParkedValidators", "Validator"]
@@ -20,10 +19,6 @@ class Validator:
     :type balance: int
     :param numStakers: Number of stakers for this validator.
     :type numStakers: int
-    :param blockNumber: Block number from which this validator was fetch for.
-    :type blockNumber: int
-    :param blockHash: Block hash from which this validator was fetch for.
-    :type blockHash: str
     :param inactivityFlag: Optional inactivity flag.
     :type inactivityFlag: bool
     :param signalData: Signal data for the validator.
@@ -33,7 +28,7 @@ class Validator:
     """
 
     def __init__(self, address, signingKey, votingKey, rewardAddress, balance,
-                 numStakers, blockNumber, blockHash, inactivityFlag=None,
+                 numStakers, inactivityFlag=None,
                  signalData=None, stakers=[]):
         self.address = address
         self.signingKey = signingKey
@@ -47,15 +42,13 @@ class Validator:
         if type(stakers) is list:
             for staker in stakers:
                 staker_objs.append(
-                    Staker(staker['address'], staker['balance'], blockNumber,
-                           blockHash))
+                    Staker(staker['address'], staker['balance']))
         else:
             from ..nimiq_client import InternalErrorException
             raise InternalErrorException(
                 "Couldn't parse Stakers {0}".format(stakers)
             )
         self.stakers = staker_objs
-        self.blockchainState = BlockchainState(blockNumber, blockHash)
 
 
 class ParkedValidators:

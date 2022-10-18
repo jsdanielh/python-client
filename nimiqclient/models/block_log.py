@@ -23,18 +23,12 @@ class BlockLog:
     :type type: BlockLogType
     :param inherents: Inherent logs associated with the block log.
     :type inherents: List of (str)
-    :param blockHash: Block hash associated with the block log.
-    :type blockHash: str
-    :param blockNumber: Block number associated with the block log.
-    :type blockNumber: int
     :param transactions: Transaction logs associated with the block log.
     :type transactions: Lost of (str)
     """
 
-    def __init__(self, type_, inherents, blockHash, blockNumber, transactions):
+    def __init__(self, type_, inherents, transactions):
         self.type = type_
-        self.blockHash = blockHash
-        self.blockNumber = blockNumber
 
         # Build the Log objects for inherentLogs
         log_objs = []
@@ -93,20 +87,15 @@ class AppliedBlockLog(BlockLog):
     :type type: BlockLogType
     :param inherents: Inherent logs associated with the block log.
     :type inherents: List of (str)
-    :param blockHash: Block hash associated with the block log.
-    :type blockHash: str
-    :param blockNumber: Block number associated with the block log.
-    :type blockNumber: int
     :param timestamp: Timestamp associated with the block log.
     :type timestamp: str
     :param transactions: Transaction logs associated with the block log.
     :type transactions: Lost of (str)
     """
 
-    def __init__(self, type, inherents, blockHash, blockNumber, timestamp,
-                 transactions):
+    def __init__(self, type, inherents, timestamp, transactions):
         super(AppliedBlockLog, self).__init__(
-            type, inherents, blockHash, blockNumber, transactions)
+            type, inherents, transactions)
         self.timestamp = timestamp
 
 
@@ -118,16 +107,12 @@ class RevertedBlockLog(BlockLog):
     :type type: BlockLogType
     :param inherents: Inherent logs associated with the block log.
     :type inherents: List of (str)
-    :param blockHash: Block hash associated with the block log.
-    :type blockHash: str
-    :param blockNumber: Block number associated with the block log.
-    :type blockNumber: int
     :param timestamp: Timestamp associated with the block log.
     :type timestamp: str
     :param transactions: Transaction logs associated with the block log.
     :type transactions: Lost of (str)
     """
 
-    def __init__(self, type, inherents, blockHash, blockNumber, transactions):
+    def __init__(self, type, inherents, transactions):
         super(RevertedBlockLog, self).__init__(
-            type, inherents, blockHash, blockNumber, transactions)
+            type, inherents, transactions)

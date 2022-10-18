@@ -1,19 +1,21 @@
 from .callback import Callback
 from .models.account import *
 from .models.block import *
-from .models.blockchain import *
+from .models.state import *
 from .models.block_log import *
 from .models.inherent import *
 from .models.mempool import *
 from .models.node import *
 from .models.peer import *
 from .models.staker import *
+from .models.state import StateData
+from .models.state import BlockchainState
 from .models.transaction import *
 from .models.validator import *
 from .websocket_rpc import NimiqRPCMethods, NimiqSerializer
 from .error_exception import InternalErrorException, RemoteErrorException
 
-from typing import Any, Awaitable, Callable, Dict
+from typing import Any, Awaitable, Callable, Dict, List
 from fastapi_websocket_rpc import WebSocketRpcClient
 import json
 import requests
@@ -146,7 +148,7 @@ class NimiqClient:
         :rtype: list of (str)
         """
         result = await self._call("listAccounts")
-        return result if result is not None else []
+        return result['data'] if result is not None else []
 
     async def batch_number(self):
         """
@@ -155,16 +157,16 @@ class NimiqClient:
         :return: The current batch number the client is on.
         :rtype: int
         """
-        return await self._call("getBatchNumber")
+        return (await self._call("getBatchNumber"))['data']
 
     async def block_number(self):
         """
-        Returns the height of most recent block.
+        Returns the height of most( recent block.)['data']
 
         :return: The current block height the client is on.
         :rtype: int
         """
-        return await self._call("getBlockNumber")
+        return (await self._call("getBlockNumber"))['data']
 
     async def consensus(self):
         """
@@ -174,7 +176,7 @@ class NimiqClient:
             other values indicate bad.
         :rtype: bool
         """
-        return await self._call("isConsensusEstablished")
+        return (await self._call("isConsensusEstablished"))['data']
 
     async def create_account(self, passphrase=None):
         """
@@ -185,7 +187,8 @@ class NimiqClient:
         :return: Information on the wallet that was created using the command.
         :rtype: WalletAccount
         """
-        return WalletAccount(**await self._call("createAccount", passphrase))
+        result = await self._call("createAccount", passphrase)
+        return WalletAccount(result['data'])
 
     async def epoch_number(self):
         """
@@ -194,7 +197,7 @@ class NimiqClient:
         :return: The current epoch number the client is on.
         :rtype: int
         """
-        return await self._call("getEpochNumber")
+        return (await self._call("getEpochNumber"))['data']
 
     async def get_account_by_address(self, address):
         """
@@ -204,10 +207,12 @@ class NimiqClient:
         :type address: str
         :return: Details about the account. Returns the default empty basic
             account for non-existing accounts.
-        :rtype: Account or VestingContract or HTLC
+        :rtype: StateData[Account or VestingContract or HTLC]
         """
-        return Account.get_account(
-            await self._call("getAccountByAddress", address))
+        result = await self._call("getAccountByAddress", address)
+        account = Account.get_account(result['data'])
+        state = BlockchainState(**result['metadata'])
+        return StateData[Account](state, account)
 
     async def get_active_validators(self):
         """
@@ -215,10 +220,13 @@ class NimiqClient:
 
         :return: The current set of active validators using a dictionary with
             the validator address as key (str) and the balance as value (int).
-        :rtype: dict
+        :rtype: StateData[List of (Validator)]
 
         """
-        return await self._call("getActiveValidators")
+        result = await self._call("getActiveValidators")
+        validators = [Validator(**validator) for validator in result['data']]
+        state = BlockchainState(**result['metadata'])
+        return StateData[List[Validator]](state, validators)
 
     async def get_block_by_hash(self, hash, include_transactions=None):
         """
@@ -234,7 +242,7 @@ class NimiqClient:
         """
         result = None
         result = await self._call("getBlockByHash", hash, include_transactions)
-        return Block.get_block(result) if result is not None else None
+        return Block.get_block(result['data']) if result is not None else None
 
     async def get_block_by_number(self, height, include_transactions=None):
         """
@@ -251,7 +259,7 @@ class NimiqClient:
         result = None
         result = await self._call("getBlockByNumber", height,
                                   include_transactions)
-        return Block(**result) if result is not None else None
+        return Block(**result['data']) if result is not None else None
 
     async def get_block_transaction_count_by_hash(self, hash):
         """
@@ -264,7 +272,8 @@ class NimiqClient:
             block was found.
         :rtype: int or None
         """
-        return await self._call("getBlockTransactionCountByHash", hash)
+        result = await self._call("getBlockTransactionCountByHash", hash)
+        return result['data']
 
     async def get_block_transaction_count_by_number(self, height):
         """
@@ -277,7 +286,8 @@ class NimiqClient:
             block was found.
         :rtype: int or None
         """
-        return await self._call("getBlockTransactionCountByNumber", height)
+        result = await self._call("getBlockTransactionCountByNumber", height)
+        return result['data']
 
     def get_callbacks(self):
         """
@@ -294,9 +304,12 @@ class NimiqClient:
         Returns the current slashed slots.
 
         :return: Current slashed slots.
-        :rtype: SlashedSlots
+        :rtype: StateData[SlashedSlots]
         """
-        return SlashedSlots(**await self._call("getCurrentSlashedSlots"))
+        result = await self._call("getCurrentSlashedSlots")
+        slashed_slots = SlashedSlots(**result['data'])
+        state = BlockchainState(**result['metadata'])
+        return StateData[SlashedSlots](state, slashed_slots)
 
     async def get_inherents_by_batch_number(self, batch_number):
         """
@@ -311,7 +324,7 @@ class NimiqClient:
         result = await self._call(
             "getInherentsByBatchNumber", batch_number)
         if result is not None:
-            return [Inherent(**inherent) for inherent in result]
+            return [Inherent(**inherent) for inherent in result['data']]
         else:
             return []
 
@@ -327,7 +340,7 @@ class NimiqClient:
         result = await self._call(
             "getInherentsByBlockNumber", height)
         if result is not None:
-            return [Inherent(**inherent) for inherent in result]
+            return [Inherent(**inherent) for inherent in result['data']]
         else:
             return []
 
@@ -338,16 +351,38 @@ class NimiqClient:
         :return: Set of current parked validators.
         :rtype: ParkedValidators
         """
-        return ParkedValidators(**await self._call("getParkedValidators"))
+        result = await self._call("getParkedValidators")
+        parked_validators = ParkedValidators(**result['data'])
+        state = BlockchainState(**result['metadata'])
+        return StateData[ParkedValidators](state, parked_validators)
 
     async def get_previous_slashed_slots(self):
         """
         Returns the previous slashed slots.
 
         :return: Previous slashed slots.
-        :rtype: SlashedSlots
+        :rtype: StateData[SlashedSlots]
         """
-        return SlashedSlots(**await self._call("getPreviousSlashedSlots"))
+        result = await self._call("getPreviousSlashedSlots")
+        slashed_slots = SlashedSlots(**result['data'])
+        state = BlockchainState(**result['metasata'])
+        return StateData[SlashedSlots](state, slashed_slots)
+
+    async def get_slot_at(self, block_number, offset=None):
+        """
+        Returns the slot at a specific block number
+
+        :param block_number: Block number for which the slot is queried.
+        :type block_number: int
+        :param offset: Optional block number offset.
+        :type int, optional
+        :return: The slot at the specified block number.
+        :rtype: StateData[Slot]
+        """
+        result = await self._call("getSlotAt", block_number, offset)
+        slot = Slot(**result['data'])
+        state = BlockchainState(**result['metadata'])
+        return StateData[Slot](state, slot)
 
     def get_subscriptions(self):
         """
@@ -368,8 +403,8 @@ class NimiqClient:
         :return: The transaction object.
         :rtype: Transaction
         """
-        return Transaction(
-            **await self._call("getRawTransactionInfo", transaction))
+        result = await self._call("getRawTransactionInfo", transaction)
+        return Transaction(**result['data'])
 
     async def get_staker_by_address(self, address):
         """
@@ -378,9 +413,12 @@ class NimiqClient:
         :param address: Address of the staker.
         :type address: str
         :return: The staker object.
-        :rtype: Staker
+        :rtype: StateData[Staker]
         """
-        return Staker(**await self._call("getStakerByAddress", address))
+        result = await self._call("getStakerByAddress", address)
+        staker = Staker(**result['data'])
+        state = BlockchainState(**result['metadata'])
+        return StateData[Staker](state, staker)
 
     async def get_transactions_by_address(self, address,
                                           number_of_transactions=None):
@@ -401,7 +439,7 @@ class NimiqClient:
         result = await self._call(
             "getTransactionsByAddress", address, number_of_transactions
         )
-        return [Transaction(**tx) for tx in result]
+        return [Transaction(**tx) for tx in result['data']]
 
     async def get_transaction_hashes_by_address(self, address,
                                                 number_of_transactions=None):
@@ -423,7 +461,7 @@ class NimiqClient:
         result = await self._call(
             "getTransactionHashesByAddress", address,
             number_of_transactions)
-        return result
+        return result['data']
 
     async def get_transactions_by_batch_number(self, batch_number):
         """
@@ -438,7 +476,7 @@ class NimiqClient:
         result = await self._call(
             "getTransactionsByBatchNumber", batch_number)
         if result is not None:
-            return [Transaction(**tx) for tx in result]
+            return [Transaction(**tx) for tx in result['data']]
         else:
             return []
 
@@ -454,7 +492,7 @@ class NimiqClient:
         result = await self._call(
             "getTransactionsByBlockNumber", height)
         if result is not None:
-            return [Transaction(**tx) for tx in result]
+            return [Transaction(**tx) for tx in result['data']]
         else:
             return []
 
@@ -469,7 +507,7 @@ class NimiqClient:
         :rtype: Transaction or None
         """
         result = await self._call("getTransactionByHash", hash)
-        return Transaction(**result) if result is not None else None
+        return Transaction(**result['data']) if result is not None else None
 
     async def get_validator_address(self):
         """
@@ -478,7 +516,7 @@ class NimiqClient:
         :return: Address of the current validator.
         :rtype: str or None
         """
-        return await self._call("getAddress")
+        return (await self._call("getAddress"))['data']
 
     async def get_validator_by_address(self, address, include_stakers=None):
         """
@@ -490,13 +528,18 @@ class NimiqClient:
             Validator object to be returned.
         :type include_stakers: bool, optional
         :return: Validator for the corresponding address
-        :rtype: Validator
+        :rtype: StateData[Validator]
         """
         result = None
         result = await self._call(
             "getValidatorByAddress", address, include_stakers
         )
-        return Validator(**result) if result is not None else None
+        if result is None:
+            return None
+
+        validator = Validator(**result['data'])
+        state = BlockchainState(**result['metadata'])
+        return StateData[Validator](state, validator)
 
     async def get_validator_signing_key(self):
         """
@@ -505,7 +548,7 @@ class NimiqClient:
         :return: Signing key of the current validator.
         :rtype: str or None
         """
-        return await self._call("getSigningKey")
+        return (await self._call("getSigningKey"))['data']
 
     async def get_validator_voting_key(self):
         """
@@ -514,7 +557,7 @@ class NimiqClient:
         :return: Voting key of the current validator.
         :rtype: str or None
         """
-        return await self._call("getVotingKey")
+        return (await self._call("getVotingKey"))['data']
 
     async def importRawKey(self, private_key, passphrase=None):
         """
@@ -527,7 +570,8 @@ class NimiqClient:
         :return: Address of the imported raw key.
         :rtype: str
         """
-        return await self._call("importRawKey", private_key, passphrase)
+        result = await self._call("importRawKey", private_key, passphrase)
+        return result['data']
 
     async def is_account_imported(self, address):
         """
@@ -538,7 +582,7 @@ class NimiqClient:
         :return: Bool indicating wether the account has been imported.
         :rtype: bool
         """
-        return await self._call("isAccountImported", address)
+        return (await self._call("isAccountImported", address))['data']
 
     async def is_account_unlocked(self, address):
         """
@@ -549,7 +593,7 @@ class NimiqClient:
         :return: Bool indicating wether the account has been unlocked.
         :rtype: bool
         """
-        return await self._call("isAccountUnlocked", address)
+        return (await self._call("isAccountUnlocked", address))['data']
 
     async def lock_account(self, address):
         """
@@ -570,7 +614,7 @@ class NimiqClient:
         :rtype: MempoolInfo
         """
         result = await self._call("mempool")
-        return MempoolInfo(**result)
+        return MempoolInfo(**result['data'])
 
     async def mempool_content(self, include_transactions=None):
         """
@@ -585,7 +629,8 @@ class NimiqClient:
         """
         result = None
         result = await self._call("mempoolContent", include_transactions)
-        return [tx if type(tx) is str else Transaction(**tx) for tx in result]
+        return [tx if type(tx) is str else Transaction(**tx)
+                for tx in result['data']]
 
     async def min_fee_per_byte(self):
         """
@@ -594,7 +639,7 @@ class NimiqClient:
         :return: The new minimum fee per byte.
         :rtype: int
         """
-        return await self._call("getMinFeePerByte")
+        return (await self._call("getMinFeePerByte"))['data']
 
     async def peer_count(self):
         """
@@ -604,7 +649,7 @@ class NimiqClient:
         :return: Number of connected peers.
         :rtype: int
         """
-        return await self._call("getPeerCount")
+        return (await self._call("getPeerCount"))['data']
 
     async def peer_id(self):
         """
@@ -613,7 +658,7 @@ class NimiqClient:
         :return: Peer ID of the running client.
         :rtype: string
         """
-        return await self._call("getPeerId")
+        return (await self._call("getPeerId"))['data']
 
     async def peer_list(self):
         """
@@ -622,7 +667,8 @@ class NimiqClient:
         :return: The list of peers.
         :rtype: list of(Peer)
         """
-        return [Peer(**peer) for peer in await self._call("getPeerList")]
+        result = await self._call("getPeerList")
+        return [Peer(**peer) for peer in result['data']]
 
     async def peer_state(self, address):
         """
@@ -633,7 +679,8 @@ class NimiqClient:
         :return: The current state of the peer.
         :rtype: Peer
         """
-        return Peer(**await self._call("peerState", address))
+        result = await self._call("peerState", address)
+        return Peer(**result['data'])
 
     async def set_peer_state(self, address, command=None):
         """
@@ -646,7 +693,8 @@ class NimiqClient:
         :return: The new state of the peer.
         :rtype: Peer
         """
-        return Peer(**await self._call("peerState", address, command))
+        result = await self._call("peerState", address, command)
+        return Peer(**result['data'])
 
     async def send_raw_transaction(self, transaction):
         """
@@ -658,7 +706,7 @@ class NimiqClient:
         :return: The Hex-encoded transaction hash.
         :rtype: str
         """
-        return await self._call("sendRawTransaction", transaction)
+        return (await self._call("sendRawTransaction", transaction))['data']
 
     async def send_basic_transaction(self, address, recipient, value, fee,
                                      validityStartHeight):
@@ -680,9 +728,10 @@ class NimiqClient:
         :return: The Hex-encoded transaction hash.
         :rtype: str
         """
-        return await self._call(
+        result = await self._call(
             "sendBasicTransaction", address, recipient, value, fee,
             validityStartHeight)
+        return result['data']
 
     async def send_stake_transaction(self, address, staker, value, fee,
                                      validityStartHeight):
@@ -705,9 +754,10 @@ class NimiqClient:
         :return: The Hex-encoded transaction hash.
         :rtype: str
         """
-        return await self._call(
+        result = await self._call(
             "sendStakeTransaction", address, staker, value, fee,
             validityStartHeight)
+        return result['data']
 
     async def subscribe_for_head_block(
             self,
@@ -724,9 +774,11 @@ class NimiqClient:
             callback is called
         :type kwargs: dict
         """
+        def get_block_from_result(data: Dict):
+            return Block.get_block(data['data'])
         await self._call_and_subscribe(callback,
                                        kwargs,
-                                       Block.get_block,
+                                       get_block_from_result,
                                        "subscribeForHeadBlock",
                                        include_transactions)
 
@@ -744,14 +796,16 @@ class NimiqClient:
             callback is called
         :type kwargs: dict
         """
-        await self._call_and_subscribe(callback, kwargs, None,
+        def get_hash_from_result(data: Dict):
+            return data['data']
+        await self._call_and_subscribe(callback, kwargs, get_hash_from_result,
                                        "subscribeForHeadBlockHash")
 
     async def subscribe_for_logs_by_addresses_and_types(
             self,
             addresses,
             log_types,
-            callback: Callable[[Any, BlockLog, Dict], Awaitable[None]],
+            callback: Callable[[Any, StateData, Dict], Awaitable[None]],
             **kwargs):
         """
         Subscribes to block logs by type and addresses produced by the server
@@ -768,9 +822,13 @@ class NimiqClient:
             callback is called
         :type kwargs: dict
         """
+        def get_block_logs_from_result(data: Dict):
+            block_log = BlockLog.get_block_log(data['data'])
+            state = BlockchainState(**data['metadata'])
+            return StateData[BlockLog](state, block_log)
         await self._call_and_subscribe(callback,
                                        kwargs,
-                                       BlockLog.get_block_log,
+                                       get_block_logs_from_result,
                                        "subscribeForLogsByAddressesAndTypes",
                                        addresses,
                                        log_types)
@@ -792,10 +850,14 @@ class NimiqClient:
             callback is called
         :type kwargs: dict
         """
+        def get_validator_from_result(data: Dict):
+            validator = Validator(data['data'])
+            state = BlockchainState(**data['metadata'])
+            return StateData[Validator](state, validator)
         await self._call_and_subscribe(
             callback,
             kwargs,
-            Validator,
+            get_validator_from_result,
             "subscribeForValidatorElectionByAddress",
             address)
 

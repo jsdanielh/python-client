@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import TypeVar, Generic
 
 __all__ = ["SyncStatus", "LogLevel"]
 

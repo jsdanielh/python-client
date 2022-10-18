@@ -2,7 +2,7 @@ from .nimiq_client import *
 from .models.account import *
 from .models.block_log import *
 from .models.block import *
-from .models.blockchain import *
+from .models.state import *
 from .models.log import *
 from .models.mempool import *
 from .models.node import *
