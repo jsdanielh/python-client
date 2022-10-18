@@ -40,8 +40,6 @@ class Block:
     :type size: int
     :param version: Version of the block
     :type version: int
-    :param view: View number of the block.
-    :type view: int
     :param timestamp: Timestamp of the block.
     :type timestamp: int
     :param seed: Seeds for the block.
@@ -53,7 +51,7 @@ class Block:
     """
 
     def __init__(self, number, batch, type, bodyHash, epoch, extraData, hash,
-                 parentHash, size, version, view, timestamp, seed, stateHash,
+                 parentHash, size, version, timestamp, seed, stateHash,
                  historyHash):
         self.number = number
         self.batch = batch
@@ -65,7 +63,6 @@ class Block:
         self.parentHash = parentHash
         self.size = size
         self.version = version
-        self.view = view
         self.timestamp = timestamp
         self.seed = seed
         self.stateHash = stateHash
@@ -114,8 +111,6 @@ class MicroBlock(Block):
     :type size: int
     :param version: Version of the block
     :type version: int
-    :param view: View number of the block.
-    :type view: int
     :param timestamp: Timestamp of the block.
     :type timestamp: int
     :param producer: Producer of the block.
@@ -147,7 +142,6 @@ class MicroBlock(Block):
         parentHash,
         size,
         version,
-        view,
         timestamp,
         producer,
         stateHash,
@@ -159,8 +153,8 @@ class MicroBlock(Block):
     ):
         super(MicroBlock, self).__init__(number, batch, type, bodyHash, epoch,
                                          extraData, hash, parentHash, size,
-                                         version, view, timestamp, seed,
-                                         stateHash, historyHash)
+                                         version, timestamp, seed, stateHash,
+                                         historyHash)
         self.producer = producer
         self.forkProofs = forkProofs
         self.justification = justification
@@ -202,8 +196,6 @@ class MacroBlock(Block):
     :type size: int
     :param version: Version of the block
     :type version: int
-    :param view: View number of the block.
-    :type view: int
     :param timestamp: Timestamp of the block.
     :type timestamp: int
     :param seed: Seeds for the block.
@@ -242,7 +234,6 @@ class MacroBlock(Block):
         parentHash,
         size,
         version,
-        view,
         timestamp,
         seed,
         stateHash,
@@ -257,8 +248,8 @@ class MacroBlock(Block):
     ):
         super(MacroBlock, self).__init__(number, batch, type, bodyHash, epoch,
                                          extraData, hash, parentHash, size,
-                                         version, view, timestamp, seed,
-                                         stateHash, historyHash)
+                                         version, timestamp, seed, stateHash,
+                                         historyHash)
         self.isElectionBlock = isElectionBlock
         self.parentElectionHash = parentElectionHash
         self.slots = slots
