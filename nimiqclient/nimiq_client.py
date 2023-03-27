@@ -49,14 +49,14 @@ class NimiqClient:
         self.callbacks = {}
         self.subscriptions = {}
         self.url = "{0}://{1}:{2}".format(scheme, host, port)
-        if scheme not in ["ws", "http", "https"]:
+        if scheme not in ["ws", "wss", "http", "https"]:
             raise InternalErrorException("Invalid scheme: {}".format(scheme))
 
-        self.websocket = scheme == "ws"
+        self.websocket = scheme == "ws" or scheme == "wss"
         self.auth = HTTPBasicAuth(user, password)
 
         if self.websocket:
-            self.url += "/ws"
+            self.url += "/" + scheme
             self.session = WebSocketRpcClient(
                 self.url,
                 NimiqRPCMethods(self),
@@ -420,6 +420,20 @@ class NimiqClient:
         state = BlockchainState(**result['metadata'])
         return StateData[Staker](state, staker)
 
+    async def get_stakers_by_validator_address(self, address):
+        """
+        Gets the stakers for a validator given its address
+
+        :param address: Address of the validator.
+        :type address: str
+        :return: The staker object.
+        :rtype: StateData[list of (Staker)]
+        """
+        result = await self._call("getStakersByValidatorAddress", address)
+        stakers = [Staker(**staker) for staker in result['data']]
+        state = BlockchainState(**result['metadata'])
+        return StateData[Staker](state, stakers)
+
     async def get_transactions_by_address(self, address,
                                           number_of_transactions=None):
         """
@@ -518,7 +532,7 @@ class NimiqClient:
         """
         return (await self._call("getAddress"))['data']
 
-    async def get_validator_by_address(self, address, include_stakers=None):
+    async def get_validator_by_address(self, address):
         """
         Returns a validator given its address
 
@@ -526,14 +540,12 @@ class NimiqClient:
         :type address: str
         :param include_stakers: Set to true to include stakers in the
             Validator object to be returned.
-        :type include_stakers: bool, optional
         :return: Validator for the corresponding address
         :rtype: StateData[Validator]
         """
         result = None
         result = await self._call(
-            "getValidatorByAddress", address, include_stakers
-        )
+            "getValidatorByAddress", address)
         if result is None:
             return None
 
