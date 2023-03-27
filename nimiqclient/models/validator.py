@@ -1,5 +1,3 @@
-from .staker import Staker
-
 __all__ = ["ParkedValidators", "Validator"]
 
 
@@ -23,13 +21,11 @@ class Validator:
     :type inactivityFlag: bool
     :param signalData: Signal data for the validator.
     :type signalData: str
-    :param stakers: List of stakers represented by a Staker object.
-    :type stakers: list of(Staker)
     """
 
     def __init__(self, address, signingKey, votingKey, rewardAddress, balance,
                  numStakers, inactivityFlag=None,
-                 signalData=None, stakers=[]):
+                 signalData=None):
         self.address = address
         self.signingKey = signingKey
         self.votingKey = votingKey
@@ -38,17 +34,6 @@ class Validator:
         self.numStakers = numStakers
         self.inactivityFlag = inactivityFlag
         self.signalData = signalData
-        staker_objs = []
-        if type(stakers) is list:
-            for staker in stakers:
-                staker_objs.append(
-                    Staker(staker['address'], staker['balance']))
-        else:
-            from ..nimiq_client import InternalErrorException
-            raise InternalErrorException(
-                "Couldn't parse Stakers {0}".format(stakers)
-            )
-        self.stakers = staker_objs
 
 
 class ParkedValidators:
