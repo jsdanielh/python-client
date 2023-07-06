@@ -356,6 +356,16 @@ class NimiqClient:
         else:
             return []
 
+    async def get_latest_block(self, include_body=None):
+        """
+        Returns information the latest block.
+
+        :return: The latest block in the chain.
+        :rtype: Block
+        """
+        result = await self._call("getLatestBlock", include_body)
+        return Block.get_block(result['data'])
+
     async def get_parked_validators(self):
         """
         Returns the set of current parked validators.
