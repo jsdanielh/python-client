@@ -214,6 +214,18 @@ class NimiqClient:
         state = BlockchainState(**result['metadata'])
         return StateData[Account](state, account)
 
+    async def get_accounts(self):
+        """
+        Returns details for all of the the accounts in the accounts tree.
+
+        :return: Details for all of the the accounts in the accounts tree.
+        :rtype: StateData[list of (Account or VestingContract or HTLC)]
+        """
+        result = await self._call("getAccounts")
+        accounts = [Account.get_account(account) for account in result['data']]
+        state = BlockchainState(**result['metadata'])
+        return StateData[list[Account]](state, accounts)
+
     async def get_active_validators(self):
         """
         Returns a dictionary with the set of the current active validators.
@@ -552,6 +564,19 @@ class NimiqClient:
         validator = Validator(**result['data'])
         state = BlockchainState(**result['metadata'])
         return StateData[Validator](state, validator)
+
+    async def get_validators(self):
+        """
+        Returns a all validators in the staking contract
+
+        :return: Validator for the corresponding address
+        :rtype: StateData[List of (Validator)]
+        """
+        result = await self._call("getValidators")
+
+        validators = [Validator(**validator) for validator in result['data']]
+        state = BlockchainState(**result['metadata'])
+        return StateData[list[Validator]](state, validators)
 
     async def get_validator_signing_key(self):
         """
