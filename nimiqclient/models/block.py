@@ -209,6 +209,8 @@ class MacroBlock(Block):
     :type isElectionBlock: bool
     :param parentElectionHash: Parent election hash of the macro block.
     :type parentElectionHash: str
+    :param interlink: The block interlink.
+    :type interlink: str
     :param slots: Slots for the block
     :type slots: list
     :param lostRewardSet: Set of lost rewards of the block.
@@ -240,6 +242,7 @@ class MacroBlock(Block):
         historyHash,
         isElectionBlock,
         parentElectionHash,
+        interlink,
         slots=None,
         lostRewardSet=None,
         disabledSet=None,
@@ -251,6 +254,7 @@ class MacroBlock(Block):
                                          version, timestamp, seed, stateHash,
                                          historyHash)
         self.isElectionBlock = isElectionBlock
+        self.interlink = interlink
         self.parentElectionHash = parentElectionHash
         self.slots = slots
         self.lostRewardSet = lostRewardSet
