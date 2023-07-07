@@ -15,6 +15,8 @@ class AccountType:
     """Vesting contract."""
     HTLC = 'htlc'
     """Hashed Timelock Contract."""
+    STAKING = 'staking'
+    """Staking Contract."""
 
 
 class Account:
@@ -49,6 +51,8 @@ class Account:
             return HTLC(**data)
         elif type == AccountType.VESTING:
             return VestingContract(**data)
+        elif type == AccountType.STAKING:
+            return StakingContract(**data)
         else:
             return Account(**data)
 
@@ -138,13 +142,34 @@ class HTLC(Account):
         timeout,
         totalAmount,
     ):
-        super(HTLC, self).__init__(id, address, balance, type)
+        super(HTLC, self).__init__(address, balance, type)
         self.sender = sender
         self.recipient = recipient
         self.hashRoot = hashRoot
         self.hashCount = hashCount
         self.timeout = timeout
         self.totalAmount = totalAmount
+
+
+class StakingContract(Account):
+    """
+    Staking Contract object returned by the server.
+
+    :param address: User friendly address (NQ-address).
+    :type address: str
+    :param balance: Balance of the account (in smallest unit).
+    :type balance: int
+    :param type: The account type associated with the account.
+    :type type: AccountType
+    """
+
+    def __init__(
+        self,
+        address,
+        balance,
+        type,
+    ):
+        super(StakingContract, self).__init__(address, balance, type)
 
 
 class WalletAccount:
