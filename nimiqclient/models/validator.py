@@ -17,15 +17,20 @@ class Validator:
     :type balance: int
     :param numStakers: Number of stakers for this validator.
     :type numStakers: int
+    :param retired: Flag that indicates the retired condition.
+    :type retired: bool
     :param inactivityFlag: Optional inactivity flag.
-    :type inactivityFlag: bool
+    :type inactivityFlag: bool, optional
     :param signalData: Signal data for the validator.
-    :type signalData: str
+    :type signalData: str, optional
+    :param jailRelease: Optional value when the validator will be released from
+        failing.
+    :type jailRelease: int, optional
     """
 
     def __init__(self, address, signingKey, votingKey, rewardAddress, balance,
-                 numStakers, inactivityFlag=None,
-                 signalData=None):
+                 numStakers, retired, inactivityFlag=None,
+                 signalData=None, jailRelease=None):
         self.address = address
         self.signingKey = signingKey
         self.votingKey = votingKey
@@ -34,6 +39,8 @@ class Validator:
         self.numStakers = numStakers
         self.inactivityFlag = inactivityFlag
         self.signalData = signalData
+        self.retired = retired
+        self.jailRelease = jailRelease
 
 
 class ParkedValidators:
