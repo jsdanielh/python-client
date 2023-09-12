@@ -13,14 +13,15 @@ class Staker:
     :type inactiveBalance: int
     :param delegation: Optional address of the delegated validator
     :type delegation: str, optional
-    :param inactiveRelease: Optional inactive release of the staker.
-    :type inactiveRelease: int, optional
+    :param inactiveFrom: Optional value indicating since which block this
+        staker has been inactive.
+    :type inactiveFrom: int, optional
     """
 
     def __init__(self, address, balance, inactiveBalance, delegation=None,
-                 inactiveRelease=None):
+                 inactiveFrom=None):
         self.address = address
         self.balance = balance
-        self.delegation = delegation
         self.inactiveBalance = inactiveBalance
-        self.inactiveRelease = inactiveRelease
+        self.delegation = delegation
+        self.inactiveFrom = inactiveFrom

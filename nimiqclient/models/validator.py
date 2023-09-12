@@ -23,14 +23,14 @@ class Validator:
     :type inactivityFlag: bool, optional
     :param signalData: Signal data for the validator.
     :type signalData: str, optional
-    :param jailRelease: Optional value when the validator will be released from
-        failing.
-    :type jailRelease: int, optional
+    :param jailFrom: Optional value indicating since which block the validator
+        has been jailed.
+    :type jailFrom: int, optional
     """
 
     def __init__(self, address, signingKey, votingKey, rewardAddress, balance,
                  numStakers, retired, inactivityFlag=None,
-                 signalData=None, jailRelease=None):
+                 signalData=None, jailFrom=None):
         self.address = address
         self.signingKey = signingKey
         self.votingKey = votingKey
@@ -40,7 +40,7 @@ class Validator:
         self.inactivityFlag = inactivityFlag
         self.signalData = signalData
         self.retired = retired
-        self.jailRelease = jailRelease
+        self.jailFrom = jailFrom
 
 
 class ParkedValidators:
