@@ -15,7 +15,7 @@ setup(
     license="Apache 2.0",
     packages=["nimiqclient", "nimiqclient.models"],
     zip_safe=True,
-    install_requires=["enum34", "fastapi_websocket_rpc", "requests"],
+    install_requires=["enum34", "fastapi_websocket_rpc==0.1.24", "requests"],
     python_requires=">=2.4",
     test_suite="test",
 )
