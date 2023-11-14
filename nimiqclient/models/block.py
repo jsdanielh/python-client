@@ -125,9 +125,11 @@ class MicroBlock(Block):
     :type forkProof: dict
     :param justification: Justification of the block
     :type justification: BlockJustification
+    :param equivocationProofs: Equivocation proofs of the block
+    :type equivocationProofs: List of EquivocationProof
     :param transactions: List of transactions. Either represented by the
         transaction hash or a Transaction object.
-    :type transactions: list of(Transaction or str)
+    :type transactions: list of (Transaction or str)
     """
 
     def __init__(
@@ -149,6 +151,7 @@ class MicroBlock(Block):
         seed,
         forkProofs=None,
         justification=None,
+        equivocationProofs=None,
         transactions=[],
     ):
         super(MicroBlock, self).__init__(number, batch, type, bodyHash, epoch,
@@ -158,6 +161,7 @@ class MicroBlock(Block):
         self.producer = producer
         self.forkProofs = forkProofs
         self.justification = justification
+        self.equivocationProofs = equivocationProofs
         for index, transaction in enumerate(transactions):
             tt = type(transaction)
             if tt is not str and tt is not Transaction:
