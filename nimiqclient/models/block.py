@@ -40,6 +40,8 @@ class Block:
     :type size: int
     :param version: Version of the block
     :type version: int
+    :param network: Network ID of the block
+    :type network: int
     :param timestamp: Timestamp of the block.
     :type timestamp: int
     :param seed: Seeds for the block.
@@ -51,8 +53,8 @@ class Block:
     """
 
     def __init__(self, number, batch, type, bodyHash, epoch, extraData, hash,
-                 parentHash, size, version, timestamp, seed, stateHash,
-                 historyHash):
+                 parentHash, size, version, network, timestamp, seed,
+                 stateHash, historyHash):
         self.number = number
         self.batch = batch
         self.type = type
@@ -63,6 +65,7 @@ class Block:
         self.parentHash = parentHash
         self.size = size
         self.version = version
+        self.network = network
         self.timestamp = timestamp
         self.seed = seed
         self.stateHash = stateHash
@@ -111,6 +114,8 @@ class MicroBlock(Block):
     :type size: int
     :param version: Version of the block
     :type version: int
+    :param network: Network ID of the block
+    :type network: int
     :param timestamp: Timestamp of the block.
     :type timestamp: int
     :param producer: Producer of the block.
@@ -144,6 +149,7 @@ class MicroBlock(Block):
         parentHash,
         size,
         version,
+        network,
         timestamp,
         producer,
         stateHash,
@@ -156,8 +162,8 @@ class MicroBlock(Block):
     ):
         super(MicroBlock, self).__init__(number, batch, type, bodyHash, epoch,
                                          extraData, hash, parentHash, size,
-                                         version, timestamp, seed, stateHash,
-                                         historyHash)
+                                         version, network, timestamp, seed,
+                                         stateHash, historyHash)
         self.producer = producer
         self.forkProofs = forkProofs
         self.justification = justification
@@ -200,6 +206,8 @@ class MacroBlock(Block):
     :type size: int
     :param version: Version of the block
     :type version: int
+    :param network: Network ID of the block
+    :type network: int
     :param timestamp: Timestamp of the block.
     :type timestamp: int
     :param seed: Seeds for the block.
@@ -240,6 +248,7 @@ class MacroBlock(Block):
         parentHash,
         size,
         version,
+        network,
         timestamp,
         seed,
         stateHash,
@@ -255,8 +264,8 @@ class MacroBlock(Block):
     ):
         super(MacroBlock, self).__init__(number, batch, type, bodyHash, epoch,
                                          extraData, hash, parentHash, size,
-                                         version, timestamp, seed, stateHash,
-                                         historyHash)
+                                         version, network, timestamp, seed,
+                                         stateHash, historyHash)
         self.isElectionBlock = isElectionBlock
         self.interlink = interlink
         self.parentElectionHash = parentElectionHash
