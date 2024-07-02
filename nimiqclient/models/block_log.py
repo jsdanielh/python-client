@@ -51,7 +51,7 @@ class BlockLog:
             tt = type(log)
             if tt is not str and tt is not TransactionLog:
                 if tt is dict:
-                    tx_log_objs.append(TransactionLog(**log))
+                    tx_log_objs.append(TransactionLog.deserialize(log))
                 else:
                     from ..nimiq_client import InternalErrorException
 
@@ -59,6 +59,11 @@ class BlockLog:
                         "Couldn't parse Transaction {0}".format(log)
                     )
         self.txLogs = tx_log_objs
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
 
     @staticmethod
     def get_block_log(data):
@@ -72,11 +77,11 @@ class BlockLog:
         """
         type = data.get("type")
         if type == BlockLogType.APPLIED:
-            return AppliedBlockLog(**data)
+            return AppliedBlockLog.deserialize(data)
         elif type == BlockLogType.REVERTED:
-            return RevertedBlockLog(**data)
+            return RevertedBlockLog.deserialize(data)
         else:
-            return BlockLog(**data)
+            return BlockLog.deserialize(data)
 
 
 class AppliedBlockLog(BlockLog):
@@ -98,6 +103,11 @@ class AppliedBlockLog(BlockLog):
             type, inherents, transactions)
         self.timestamp = timestamp
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
 
 class RevertedBlockLog(BlockLog):
     """
@@ -116,3 +126,8 @@ class RevertedBlockLog(BlockLog):
     def __init__(self, type, inherents, transactions):
         super(RevertedBlockLog, self).__init__(
             type, inherents, transactions)
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}

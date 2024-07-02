@@ -66,6 +66,11 @@ class Log:
     def __init__(self, type):
         self.type = type
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
     @staticmethod
     def get_log(data):
         """
@@ -83,49 +88,49 @@ class Log:
         # Then do the decoding
         type = data.get("type")
         if type == LogType.PAY_FEE:
-            return PayFeeLog(**data)
+            return PayFeeLog.deserialize(data)
         elif type == LogType.TRANSFER:
-            return TransferLog(**data)
+            return TransferLog.deserialize(data)
         elif type == LogType.HTLC_CREATE:
-            return HTLCCreateLog(**data)
+            return HTLCCreateLog.deserialize(data)
         elif type == LogType.HTLC_TIMEOUT_RESOLVE:
-            return HTLCTimeoutResolveLog(**data)
+            return HTLCTimeoutResolveLog.deserialize(data)
         elif type == LogType.HTLC_REGULAR_TRANSFER:
-            return HTLCRegularTransferLog(**data)
+            return HTLCRegularTransferLog.deserialize(data)
         elif type == LogType.HTLC_EARLY_RESOLVE:
-            return HTLCEarlyResolveLog(**data)
+            return HTLCEarlyResolveLog.deserialize(data)
         elif type == LogType.VESTING_CREATE:
-            return VestingCreateLog(**data)
+            return VestingCreateLog.deserialize(data)
         elif type == LogType.CREATE_VALIDATOR:
-            return CreateValidatorLog(**data)
+            return CreateValidatorLog.deserialize(data)
         elif type == LogType.UPDATE_VALIDATOR:
-            return UpdateValidatorLog(**data)
+            return UpdateValidatorLog.deserialize(data)
         elif type == LogType.INACTIVATE_VALIDATOR:
-            return InactivateValidatorLog(**data)
+            return InactivateValidatorLog.deserialize(data)
         elif type == LogType.REACTIVATE_VALIDATOR:
-            return ReactivateValidatorLog(**data)
+            return ReactivateValidatorLog.deserialize(data)
         elif type == LogType.UNPARK_VALIDATOR:
-            return UnparkValidatorLog(**data)
+            return UnparkValidatorLog.deserialize(data)
         elif type == LogType.CREATE_STAKER:
-            return CreateStakerLog(**data)
+            return CreateStakerLog.deserialize(data)
         elif type == LogType.STAKE:
-            return StakeLog(**data)
+            return StakeLog.deserialize(data)
         elif type == LogType.UPDATE_STAKER:
-            return UpdateStakerLog(**data)
+            return UpdateStakerLog.deserialize(data)
         elif type == LogType.DELETE_VALIDATOR:
-            return DeleteValidatorLog(**data)
+            return DeleteValidatorLog.deserialize(data)
         elif type == LogType.UNSTAKE:
-            return UnstakeLog(**data)
+            return UnstakeLog.deserialize(data)
         elif type == LogType.PAYOUT_REWARD:
-            return PayoutRewardLog(**data)
+            return PayoutRewardLog.deserialize(data)
         elif type == LogType.PARK:
-            return ParkLog(**data)
+            return ParkLog.deserialize(data)
         elif type == LogType.SLASH:
-            return SlashLog(**data)
+            return SlashLog.deserialize(data)
         elif type == LogType.REVERT_CONTRACT:
-            return RevertContractLog(**data)
+            return RevertContractLog.deserialize(data)
         else:
-            return Log(**data)
+            return Log.deserialize(data)
 
 
 class PayFeeLog(Log):
@@ -144,6 +149,11 @@ class PayFeeLog(Log):
         super(PayFeeLog, self).__init__(type)
         self.sender = from_
         self.fee = fee
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
 
 
 class TransferLog(Log):
@@ -165,6 +175,11 @@ class TransferLog(Log):
         self.sender = from_
         self.recipient = to
         self.amount = amount
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
 
 
 class HTLCCreateLog(Log):
@@ -204,6 +219,11 @@ class HTLCCreateLog(Log):
         self.timeout = timeout
         self.totalAmount = totalAmount
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
 
 class HTLCTimeoutResolveLog(Log):
     """
@@ -219,6 +239,11 @@ class HTLCTimeoutResolveLog(Log):
     def __init__(self, type, contractAddress):
         super(HTLCTimeoutResolveLog, self).__init__(type)
         self.contractAddress = contractAddress
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
 
 
 class HTLCRegularTransferLog(Log):
@@ -242,6 +267,11 @@ class HTLCRegularTransferLog(Log):
         self.preImage = preImage
         self.hashDepth = hashDepth
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
 
 class HTLCEarlyResolveLog(Log):
     """
@@ -257,6 +287,11 @@ class HTLCEarlyResolveLog(Log):
     def __init__(self, type, contractAddress):
         super(HTLCEarlyResolveLog, self).__init__(type)
         self.contractAddress = contractAddress
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
 
 
 class VestingCreateLog(Log):
@@ -290,6 +325,11 @@ class VestingCreateLog(Log):
         self.stepAmount = stepAmount
         self.totalAmount = totalAmount
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
 
 class CreateValidatorLog(Log):
     """
@@ -308,6 +348,11 @@ class CreateValidatorLog(Log):
         super(CreateValidatorLog, self).__init__(type)
         self.validatorAddress = validatorAddress
         self.rewardAddress = rewardAddress
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
 
 
 class UpdateValidatorLog(Log):
@@ -333,6 +378,11 @@ class UpdateValidatorLog(Log):
         self.oldRewardAddress = oldRewardAddress
         self.newRewardAddress = newRewardAddress
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
 
 class InactivateValidatorLog(Log):
     """
@@ -347,6 +397,11 @@ class InactivateValidatorLog(Log):
     def __init__(self, type, validatorAddress):
         super(InactivateValidatorLog, self).__init__(type)
         self.validatorAddress = validatorAddress
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
 
 
 class ReactivateValidatorLog(Log):
@@ -363,6 +418,11 @@ class ReactivateValidatorLog(Log):
         super(ReactivateValidatorLog, self).__init__(type)
         self.validatorAddress = validatorAddress
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
 
 class UnparkValidatorLog(Log):
     """
@@ -377,6 +437,11 @@ class UnparkValidatorLog(Log):
     def __init__(self, type, validatorAddress):
         super(UnparkValidatorLog, self).__init__(type)
         self.validatorAddress = validatorAddress
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
 
 
 class CreateStakerLog(Log):
@@ -400,6 +465,11 @@ class CreateStakerLog(Log):
         self.validatorAddress = validatorAddress
         self.value = value
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
 
 class StakeLog(Log):
     """
@@ -421,6 +491,11 @@ class StakeLog(Log):
         self.stakerAddress = stakerAddress
         self.validatorAddress = validatorAddress
         self.value = value
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
 
 
 class UpdateStakerLog(Log):
@@ -446,6 +521,11 @@ class UpdateStakerLog(Log):
         self.oldValidatorAddress = oldValidatorAddress
         self.newValidatorAddress = newValidatorAddress
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
 
 class DeleteValidatorLog(Log):
     """
@@ -464,6 +544,11 @@ class DeleteValidatorLog(Log):
         super(DeleteValidatorLog, self).__init__(type)
         self.validatorAddress = validatorAddress
         self.rewardAddress = rewardAddress
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
 
 
 class UnstakeLog(Log):
@@ -487,6 +572,11 @@ class UnstakeLog(Log):
         self.validatorAddress = validatorAddress
         self.value = value
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
 
 class PayoutRewardLog(Log):
     """
@@ -505,6 +595,11 @@ class PayoutRewardLog(Log):
         self.recipient = to
         self.value = value
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
 
 class ParkLog(Log):
     """
@@ -522,6 +617,11 @@ class ParkLog(Log):
         super(ParkLog, self).__init__(type)
         self.validatorAddress = validatorAddress
         self.eventBlock = eventBlock
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
 
 
 class SlashLog(Log):
@@ -549,6 +649,11 @@ class SlashLog(Log):
         self.slot = slot
         self.newlyDisabled = newlyDisabled
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
 
 class RevertContractLog(Log):
     """
@@ -563,3 +668,8 @@ class RevertContractLog(Log):
     def __init__(self, type, contractAddress):
         super(RevertContractLog, self).__init__(type)
         self.contractAddress = contractAddress
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}

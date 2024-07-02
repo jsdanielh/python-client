@@ -71,6 +71,11 @@ class Block:
         self.stateHash = stateHash
         self.historyHash = historyHash
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
     @staticmethod
     def get_block(data):
         """
@@ -83,11 +88,11 @@ class Block:
         """
         type = data.get("type")
         if type == BlockType.MicroBlock:
-            return MicroBlock(**data)
+            return MicroBlock.deserialize(data)
         elif type == BlockType.MacroBlock:
-            return MacroBlock(**data)
+            return MacroBlock.deserialize(data)
         else:
-            return Block(**data)
+            return Block.deserialize(data)
 
 
 class MicroBlock(Block):
@@ -172,7 +177,7 @@ class MicroBlock(Block):
             tt = type(transaction)
             if tt is not str and tt is not Transaction:
                 if tt is dict:
-                    transactions[index] = Transaction(**transaction)
+                    transactions[index] = Transaction.deserialize(transaction)
                 else:
                     from ..nimiq_client import InternalErrorException
 
@@ -181,6 +186,10 @@ class MicroBlock(Block):
                     )
         self.transactions = transactions
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
 
 class MacroBlock(Block):
     """
@@ -277,7 +286,7 @@ class MacroBlock(Block):
             tt = type(transaction)
             if tt is not str and tt is not Transaction:
                 if tt is dict:
-                    transactions[index] = Transaction(**transaction)
+                    transactions[index] = Transaction.deserialize(transaction)
                 else:
                     from ..nimiq_client import InternalErrorException
 
@@ -285,6 +294,12 @@ class MacroBlock(Block):
                         "Couldn't parse Transaction {0}".format(transaction)
                     )
         self.transactions = transactions
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
 
 
 class Slot:
@@ -304,6 +319,12 @@ class Slot:
         self.validator_address = validator
         self.validator_pk = publicKey
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
+
 
 class SlashedSlots:
     """
@@ -321,6 +342,12 @@ class SlashedSlots:
         self.blockNumber = blockNumber
         self.lostRewards = lostRewards
         self.disabled = disabled
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
 
 
 class ForkProof:
@@ -340,3 +367,8 @@ class ForkProof:
         self.blockNumber = blockNumber
         self.viewNumber = viewNumber
         self.hashes = hashes
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}

@@ -79,3 +79,8 @@ class Transaction:
         self.flags = flags
         self.valid = valid
         self.inMempool = inMempool
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}

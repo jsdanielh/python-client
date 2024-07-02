@@ -22,6 +22,11 @@ class SyncStatus:
         self.currentBlock = currentBlock
         self.highestBlock = highestBlock
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
 
 class LogLevel(str, Enum):
     """

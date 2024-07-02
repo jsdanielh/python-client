@@ -28,3 +28,8 @@ class Staker:
         self.delegation = delegation
         self.inactiveFrom = inactiveFrom
         self.retiredBalance = retiredBalance
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}

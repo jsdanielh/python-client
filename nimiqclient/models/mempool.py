@@ -19,3 +19,7 @@ class MempoolInfo:
         self.transactionsPerBucket = transactionsPerBucket
         """Number of transaction in the bucket. A transaction is assigned to
             the highest bucket of a value lower than its fee per byte value."""
+
+    @classmethod
+    def deserialize(cls, data):
+        return cls(**data)

@@ -19,6 +19,11 @@ class BlockchainState:
         self.blockNumber = blockNumber
         self.blockHash = blockHash
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
 
 T = TypeVar('T')
 
@@ -37,3 +42,8 @@ class StateData(Generic[T]):
     def __init__(self, metadata: BlockchainState, data: T):
         self.metadata = metadata
         self.data = data
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
