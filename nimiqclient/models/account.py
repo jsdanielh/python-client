@@ -36,6 +36,11 @@ class Account:
         self.balance = balance
         self.type = type
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
     @staticmethod
     def get_account(data):
         """
@@ -48,13 +53,13 @@ class Account:
         """
         type = data.get("type")
         if type == AccountType.HTLC:
-            return HTLC(**data)
+            return HTLC.deserialize(data)
         elif type == AccountType.VESTING:
-            return VestingContract(**data)
+            return VestingContract.deserialize(data)
         elif type == AccountType.STAKING:
-            return StakingContract(**data)
+            return StakingContract.deserialize(data)
         else:
-            return Account(**data)
+            return Account.deserialize(data)
 
 
 class VestingContract(Account):
@@ -100,6 +105,11 @@ class VestingContract(Account):
         self.vestingStepBlocks = vestingStepBlocks
         self.vestingStepAmount = vestingStepAmount
         self.vestingTotalAmount = vestingTotalAmount
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
 
 
 class HTLC(Account):
@@ -150,6 +160,11 @@ class HTLC(Account):
         self.timeout = timeout
         self.totalAmount = totalAmount
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
 
 class StakingContract(Account):
     """
@@ -171,6 +186,11 @@ class StakingContract(Account):
     ):
         super(StakingContract, self).__init__(address, balance, type)
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
 
 class WalletAccount:
     """
@@ -189,3 +209,8 @@ class WalletAccount:
         self.address = address
         self.publicKey = publicKey
         self.privateKey = privateKey
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}

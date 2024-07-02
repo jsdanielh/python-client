@@ -42,6 +42,11 @@ class Validator:
         self.retired = retired
         self.jailedFrom = jailedFrom
 
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
+
 
 class ParkedValidators:
     """
@@ -55,4 +60,9 @@ class ParkedValidators:
 
     def __init__(self, blockNumber, validators):
         self.blockNumber = blockNumber
-        self.validators = [Validator(**validator) for validator in validators]
+        self.validators = [Validator.deserialize(validator) for validator in validators]
+
+    @classmethod
+    def deserialize(cls, data):
+        params = set(inspect.signature(cls).parameters)
+        return cls(**{key: value for key, value in data.items() if key in params}
