@@ -806,6 +806,84 @@ class NimiqClient:
             validityStartHeight)
         return result['data']
 
+    async def send_set_active_stake_transaction(self, address, staker,
+                                                new_active_balance, fee,
+                                                validityStartHeight):
+        """
+        Creates and sends a set active stake transaction to set a new value
+        for the active stake
+
+        :param address: The sender address.
+        :type address: str
+        :param staker: The staker address.
+        :type staker: str
+        :param new_active_balance: The new value for the active stake
+        :type new_active_balance: int
+        :param fee: The fee of the transaction.
+        :type fee: int
+        :param validityStartHeight: The validity start height for the
+            transaction. Could be a string containing a block number
+            (e.g."1000") or an offset (e.g. "+10").
+        :type validityStartHeight: str
+        :return: The Hex-encoded transaction hash.
+        :rtype: str
+        """
+        result = await self._call(
+            "sendSetActiveStakeTransaction", address, staker,
+            new_active_balance, fee, validityStartHeight)
+        return result['data']
+
+    async def create_retire_stake_transaction(self, address, staker,
+                                              retire_stake, fee,
+                                              validityStartHeight):
+        """
+        Creates (but do not send) a retire stake transaction
+
+        :param address: The sender address.
+        :type address: str
+        :param staker: The staker address.
+        :type staker: str
+        :param retire_stake: The stake to be retired
+        :type retire_stake: int
+        :param fee: The fee of the transaction.
+        :type fee: int
+        :param validityStartHeight: The validity start height for the
+            transaction. Could be a string containing a block number
+            (e.g."1000") or an offset (e.g. "+10").
+        :type validityStartHeight: str
+        :return: The Hex-encoded transaction hash.
+        :rtype: str
+        """
+        result = await self._call(
+            "createRetireStakeTransaction", address, staker, retire_stake, fee,
+            validityStartHeight)
+        return result['data']
+
+    async def create_remove_stake_transaction(self, address, recipient,
+                                              value, fee, validityStartHeight):
+        """
+        Creates (but do not send) a remove stake transaction
+
+        :param address: The sender address.
+        :type address: str
+        :param recipient: The recipient of the funds.
+        :type recipient: str
+        :param value: The value.
+        :type value: int
+        :param fee: The fee of the transaction.
+        :type fee: int
+        :param validityStartHeight: The validity start height for the
+            transaction. Could be a string containing a block number
+            (e.g."1000") or an offset (e.g. "+10").
+        :type validityStartHeight: str
+        :return: The Hex-encoded transaction hash.
+        :rtype: str
+        """
+        result = await self._call(
+            "createRemoveStakeTransaction", address, recipient, value, fee,
+            validityStartHeight)
+        return result['data']
+
     async def subscribe_for_head_block(
             self,
             callback: Callable[[Any, Block, Dict], Awaitable[None]],
