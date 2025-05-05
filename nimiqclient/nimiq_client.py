@@ -43,7 +43,8 @@ class NimiqClient:
     """
 
     def __init__(
-        self, scheme="http", user="", password="", host="127.0.0.1", port=8648
+        self, scheme="http", user="", password="", host="127.0.0.1", port=8648,
+        url_suffix=""
     ):
         self.id = 0
         self.callbacks = {}
@@ -56,7 +57,7 @@ class NimiqClient:
         self.auth = HTTPBasicAuth(user, password)
 
         if self.websocket:
-            self.url += "/" + scheme
+            self.url = "{0}/{1}{2}".format(self.url, scheme, url_suffix)
             self.session = WebSocketRpcClient(
                 self.url,
                 NimiqRPCMethods(self),
@@ -66,6 +67,7 @@ class NimiqClient:
             # Disable ping messages since the Nimiq server doesn't support it
             self.session.MAX_CONNECTION_ATTEMPTS = 0
         else:
+            self.url = "{0}/{1}".format(self.url, url_suffix)
             self.session = requests.Session()
 
     async def __aenter__(self):
