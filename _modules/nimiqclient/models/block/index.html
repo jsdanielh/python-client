@@ -1,0 +1,441 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nimiqclient.models.block &mdash; Albatross Nimiq Python Client 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=43f7dc57"></script>
+      <script src="../../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex/" />
+    <link rel="search" title="Search" href="../../../../search/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../" class="icon icon-home">
+            Albatross Nimiq Python Client
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_autosummary/nimiqclient/">nimiqclient</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../">Albatross Nimiq Python Client</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../">Module code</a></li>
+      <li class="breadcrumb-item active">nimiqclient.models.block</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for nimiqclient.models.block</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">.transaction</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transaction</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="s2">&quot;BlockType&quot;</span><span class="p">,</span> <span class="s2">&quot;ForkProof&quot;</span><span class="p">,</span> <span class="s2">&quot;MicroBlock&quot;</span><span class="p">,</span> <span class="s2">&quot;MacroBlock&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;Slot&quot;</span><span class="p">,</span> <span class="s2">&quot;SlashedSlots&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="BlockType"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.block.BlockType/#nimiqclient.models.block.BlockType">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BlockType</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Type of a Nimiq account.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">MicroBlock</span> <span class="o">=</span> <span class="s2">&quot;micro&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Micro block&quot;&quot;&quot;</span>
+    <span class="n">MacroBlock</span> <span class="o">=</span> <span class="s2">&quot;macro&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Macro block&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="Block"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.block.Block/#nimiqclient.models.block.Block">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Block</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Block returned by the server.</span>
+
+<span class="sd">    :param number: Height of the block.</span>
+<span class="sd">    :type number: int</span>
+<span class="sd">    :param batch: Batch number of the block.</span>
+<span class="sd">    :type batch: int</span>
+<span class="sd">    :param type: The block type associated with the block.</span>
+<span class="sd">    :type type: BlockType</span>
+<span class="sd">    :param bodyHash: Hash of the block body.</span>
+<span class="sd">    :type bodyHash: str</span>
+<span class="sd">    :param epoch: Epoch number of the block.</span>
+<span class="sd">    :type epoch: int</span>
+<span class="sd">    :param extraData: Extra data of the block.</span>
+<span class="sd">    :type extraData: str</span>
+<span class="sd">    :param hash: Hash of the block.</span>
+<span class="sd">    :type hash: str</span>
+<span class="sd">    :param parentHash: Hash of the parent of the block.</span>
+<span class="sd">    :type parentHash: str</span>
+<span class="sd">    :param size: Size of the block</span>
+<span class="sd">    :type size: int</span>
+<span class="sd">    :param version: Version of the block</span>
+<span class="sd">    :type version: int</span>
+<span class="sd">    :param network: Network ID of the block</span>
+<span class="sd">    :type network: int</span>
+<span class="sd">    :param timestamp: Timestamp of the block.</span>
+<span class="sd">    :type timestamp: int</span>
+<span class="sd">    :param seed: Seeds for the block.</span>
+<span class="sd">    :type seed: BlockSeed</span>
+<span class="sd">    :param stateHash: Hash of the state of the block.</span>
+<span class="sd">    :type stateHash: str</span>
+<span class="sd">    :param historyHash: Hash of the history of the block.</span>
+<span class="sd">    :type historyHash: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">bodyHash</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">extraData</span><span class="p">,</span> <span class="nb">hash</span><span class="p">,</span>
+                 <span class="n">parentHash</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span>
+                 <span class="n">stateHash</span><span class="p">,</span> <span class="n">historyHash</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="o">=</span> <span class="n">number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch</span> <span class="o">=</span> <span class="n">batch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bodyHash</span> <span class="o">=</span> <span class="n">bodyHash</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epoch</span> <span class="o">=</span> <span class="n">epoch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extraData</span> <span class="o">=</span> <span class="n">extraData</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hash</span> <span class="o">=</span> <span class="nb">hash</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parentHash</span> <span class="o">=</span> <span class="n">parentHash</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">version</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">network</span> <span class="o">=</span> <span class="n">network</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="n">timestamp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seed</span> <span class="o">=</span> <span class="n">seed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stateHash</span> <span class="o">=</span> <span class="n">stateHash</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">historyHash</span> <span class="o">=</span> <span class="n">historyHash</span>
+
+<div class="viewcode-block" id="Block.get_block"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.block.Block/#nimiqclient.models.block.Block.get_block">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_block</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the specific block type from the dictionary data.</span>
+
+<span class="sd">        :param data: The dictionary containing the data.</span>
+<span class="sd">        :type data: dict</span>
+<span class="sd">        :return: Block object.</span>
+<span class="sd">        :rtype: Block or MicroBlock or MacroBlock</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">type</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">BlockType</span><span class="o">.</span><span class="n">MicroBlock</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">MicroBlock</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">BlockType</span><span class="o">.</span><span class="n">MacroBlock</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">MacroBlock</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Block</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="MicroBlock"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.block.MicroBlock/#nimiqclient.models.block.MicroBlock">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MicroBlock</span><span class="p">(</span><span class="n">Block</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Block returned by the server.</span>
+
+<span class="sd">    :param number: Height of the block.</span>
+<span class="sd">    :type number: int</span>
+<span class="sd">    :param batch: Batch number of the block.</span>
+<span class="sd">    :type batch: int</span>
+<span class="sd">    :param type: The BlockType associated with the block.</span>
+<span class="sd">    :type type: BlockType</span>
+<span class="sd">    :param bodyHash: Hash of the body of the block.</span>
+<span class="sd">    :type bodyHash: str</span>
+<span class="sd">    :param epoch: Epoch number of the block.</span>
+<span class="sd">    :type epoch: int</span>
+<span class="sd">    :param extraData: Extra data of the block.</span>
+<span class="sd">    :type extraData: str</span>
+<span class="sd">    :param hash: Hash of the block.</span>
+<span class="sd">    :type hash: str</span>
+<span class="sd">    :param parentHash: Hash of the parent of the block.</span>
+<span class="sd">    :type parentHash: str</span>
+<span class="sd">    :param size: Size of the block</span>
+<span class="sd">    :type size: int</span>
+<span class="sd">    :param version: Version of the block</span>
+<span class="sd">    :type version: int</span>
+<span class="sd">    :param network: Network ID of the block</span>
+<span class="sd">    :type network: int</span>
+<span class="sd">    :param timestamp: Timestamp of the block.</span>
+<span class="sd">    :type timestamp: int</span>
+<span class="sd">    :param producer: Producer of the block.</span>
+<span class="sd">    :type producer: BlockProducer</span>
+<span class="sd">    :param seed: Seeds for the block.</span>
+<span class="sd">    :type seed: BlockSeed</span>
+<span class="sd">    :param stateHash: Hash of the state of the block.</span>
+<span class="sd">    :type stateHash: str</span>
+<span class="sd">    :param historyHash: Hash of the history of the block.</span>
+<span class="sd">    :type historyHash: str</span>
+<span class="sd">    :param forkProof: Fork proof of the block.</span>
+<span class="sd">    :type forkProof: dict</span>
+<span class="sd">    :param justification: Justification of the block</span>
+<span class="sd">    :type justification: BlockJustification</span>
+<span class="sd">    :param equivocationProofs: Equivocation proofs of the block</span>
+<span class="sd">    :type equivocationProofs: List of EquivocationProof</span>
+<span class="sd">    :param transactions: List of transactions. Either represented by the</span>
+<span class="sd">        transaction hash or a Transaction object.</span>
+<span class="sd">    :type transactions: list of (Transaction or str)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">number</span><span class="p">,</span>
+        <span class="n">batch</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">,</span>
+        <span class="n">bodyHash</span><span class="p">,</span>
+        <span class="n">epoch</span><span class="p">,</span>
+        <span class="n">extraData</span><span class="p">,</span>
+        <span class="nb">hash</span><span class="p">,</span>
+        <span class="n">parentHash</span><span class="p">,</span>
+        <span class="n">size</span><span class="p">,</span>
+        <span class="n">version</span><span class="p">,</span>
+        <span class="n">network</span><span class="p">,</span>
+        <span class="n">timestamp</span><span class="p">,</span>
+        <span class="n">producer</span><span class="p">,</span>
+        <span class="n">stateHash</span><span class="p">,</span>
+        <span class="n">historyHash</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">,</span>
+        <span class="n">forkProofs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">justification</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">equivocationProofs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">transactions</span><span class="o">=</span><span class="p">[],</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MicroBlock</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">bodyHash</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span>
+                                         <span class="n">extraData</span><span class="p">,</span> <span class="nb">hash</span><span class="p">,</span> <span class="n">parentHash</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span>
+                                         <span class="n">version</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span>
+                                         <span class="n">stateHash</span><span class="p">,</span> <span class="n">historyHash</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">producer</span> <span class="o">=</span> <span class="n">producer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">forkProofs</span> <span class="o">=</span> <span class="n">forkProofs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">justification</span> <span class="o">=</span> <span class="n">justification</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">equivocationProofs</span> <span class="o">=</span> <span class="n">equivocationProofs</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">transactions</span><span class="p">):</span>
+            <span class="n">tt</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">transaction</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">tt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span> <span class="ow">and</span> <span class="n">tt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Transaction</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">tt</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
+                    <span class="n">transactions</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">Transaction</span><span class="p">(</span><span class="o">**</span><span class="n">transaction</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">..nimiq_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">InternalErrorException</span>
+
+                    <span class="k">raise</span> <span class="n">InternalErrorException</span><span class="p">(</span>
+                        <span class="s2">&quot;Couldn&#39;t parse Transaction </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">transaction</span><span class="p">)</span>
+                    <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span> <span class="o">=</span> <span class="n">transactions</span></div>
+
+
+<div class="viewcode-block" id="MacroBlock"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.block.MacroBlock/#nimiqclient.models.block.MacroBlock">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MacroBlock</span><span class="p">(</span><span class="n">Block</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Block returned by the server.</span>
+
+<span class="sd">    :param number: Height of the block.</span>
+<span class="sd">    :type number: int</span>
+<span class="sd">    :param batch: Batch number of the block.</span>
+<span class="sd">    :type batch: int</span>
+<span class="sd">    :param type: The BlockType associated with the block.</span>
+<span class="sd">    :type type: BlockType</span>
+<span class="sd">    :param bodyHash: Hash of the body of the block.</span>
+<span class="sd">    :type bodyHash: str</span>
+<span class="sd">    :param epoch: Epoch number of the block.</span>
+<span class="sd">    :type epoch: int</span>
+<span class="sd">    :param extraData: Extra data of the block.</span>
+<span class="sd">    :type extraData: str</span>
+<span class="sd">    :param hash: Hash of the block.</span>
+<span class="sd">    :type hash: str</span>
+<span class="sd">    :param parentHash: Hash of the parent of the block.</span>
+<span class="sd">    :type parentHash: str</span>
+<span class="sd">    :param size: Size of the block</span>
+<span class="sd">    :type size: int</span>
+<span class="sd">    :param version: Version of the block</span>
+<span class="sd">    :type version: int</span>
+<span class="sd">    :param network: Network ID of the block</span>
+<span class="sd">    :type network: int</span>
+<span class="sd">    :param timestamp: Timestamp of the block.</span>
+<span class="sd">    :type timestamp: int</span>
+<span class="sd">    :param seed: Seeds for the block.</span>
+<span class="sd">    :type seed: BlockSeed</span>
+<span class="sd">    :param stateHash: Hash of the state of the block.</span>
+<span class="sd">    :type stateHash: str</span>
+<span class="sd">    :param historyHash: Hash of the history of the block.</span>
+<span class="sd">    :type historyHash: str</span>
+<span class="sd">    :param isElectionBlock: Indicates whether the block is an election macro</span>
+<span class="sd">        block.</span>
+<span class="sd">    :type isElectionBlock: bool</span>
+<span class="sd">    :param parentElectionHash: Parent election hash of the macro block.</span>
+<span class="sd">    :type parentElectionHash: str</span>
+<span class="sd">    :param interlink: The block interlink.</span>
+<span class="sd">    :type interlink: str</span>
+<span class="sd">    :param slots: Slots for the block</span>
+<span class="sd">    :type slots: list</span>
+<span class="sd">    :param lostRewardSet: Set of lost rewards of the block.</span>
+<span class="sd">    :type lostRewardSet: list</span>
+<span class="sd">    :param disabledRewardSet: Set of disabled rewards of the block.</span>
+<span class="sd">    :type disabledRewardSet: list</span>
+<span class="sd">    :param justification: Justification of the block</span>
+<span class="sd">    :type justification: BlockJustification</span>
+<span class="sd">    :param transactions: List of transactions. Either represented by the</span>
+<span class="sd">        transaction hash or a Transaction object.</span>
+<span class="sd">    :type transactions: list of(Transaction or str)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">number</span><span class="p">,</span>
+        <span class="n">batch</span><span class="p">,</span>
+        <span class="nb">type</span><span class="p">,</span>
+        <span class="n">bodyHash</span><span class="p">,</span>
+        <span class="n">epoch</span><span class="p">,</span>
+        <span class="n">extraData</span><span class="p">,</span>
+        <span class="nb">hash</span><span class="p">,</span>
+        <span class="n">parentHash</span><span class="p">,</span>
+        <span class="n">size</span><span class="p">,</span>
+        <span class="n">version</span><span class="p">,</span>
+        <span class="n">network</span><span class="p">,</span>
+        <span class="n">timestamp</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">,</span>
+        <span class="n">stateHash</span><span class="p">,</span>
+        <span class="n">historyHash</span><span class="p">,</span>
+        <span class="n">isElectionBlock</span><span class="p">,</span>
+        <span class="n">parentElectionHash</span><span class="p">,</span>
+        <span class="n">interlink</span><span class="p">,</span>
+        <span class="n">slots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">lostRewardSet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">disabledSet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">justification</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">transactions</span><span class="o">=</span><span class="p">[],</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MacroBlock</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">bodyHash</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span>
+                                         <span class="n">extraData</span><span class="p">,</span> <span class="nb">hash</span><span class="p">,</span> <span class="n">parentHash</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span>
+                                         <span class="n">version</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span>
+                                         <span class="n">stateHash</span><span class="p">,</span> <span class="n">historyHash</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">isElectionBlock</span> <span class="o">=</span> <span class="n">isElectionBlock</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interlink</span> <span class="o">=</span> <span class="n">interlink</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parentElectionHash</span> <span class="o">=</span> <span class="n">parentElectionHash</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slots</span> <span class="o">=</span> <span class="n">slots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lostRewardSet</span> <span class="o">=</span> <span class="n">lostRewardSet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disabledSet</span> <span class="o">=</span> <span class="n">disabledSet</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">justification</span> <span class="o">=</span> <span class="n">justification</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">transaction</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">transactions</span><span class="p">):</span>
+            <span class="n">tt</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">transaction</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">tt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span> <span class="ow">and</span> <span class="n">tt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Transaction</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">tt</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
+                    <span class="n">transactions</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">Transaction</span><span class="p">(</span><span class="o">**</span><span class="n">transaction</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">..nimiq_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">InternalErrorException</span>
+
+                    <span class="k">raise</span> <span class="n">InternalErrorException</span><span class="p">(</span>
+                        <span class="s2">&quot;Couldn&#39;t parse Transaction </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">transaction</span><span class="p">)</span>
+                    <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transactions</span> <span class="o">=</span> <span class="n">transactions</span></div>
+
+
+<div class="viewcode-block" id="Slot"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.block.Slot/#nimiqclient.models.block.Slot">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Slot</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Slot returned from the server</span>
+
+<span class="sd">    :param slotNumber: Slot number.</span>
+<span class="sd">    :type slotNumber: int</span>
+<span class="sd">    :param validator: Address of the validator this slot belongs to.</span>
+<span class="sd">    :type validator: str</span>
+<span class="sd">    :param publicKey: Public key of the validator this slot belongs to.</span>
+<span class="sd">    :type publicKey: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slotNumber</span><span class="p">,</span> <span class="n">validator</span><span class="p">,</span> <span class="n">publicKey</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slotNumber</span> <span class="o">=</span> <span class="n">slotNumber</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validator_address</span> <span class="o">=</span> <span class="n">validator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validator_pk</span> <span class="o">=</span> <span class="n">publicKey</span></div>
+
+
+<div class="viewcode-block" id="SlashedSlots"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.block.SlashedSlots/#nimiqclient.models.block.SlashedSlots">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SlashedSlots</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Slashed slots returned from the server</span>
+
+<span class="sd">    :param blockNumber: Block number for the slashed slots.</span>
+<span class="sd">    :type blockNumber: int</span>
+<span class="sd">    :param lostRewards: Bitset indicating lost rewards for the slashed slots.</span>
+<span class="sd">    :type lostRewards: dict</span>
+<span class="sd">    :param disabled: Bitset indicating disabled slots.</span>
+<span class="sd">    :type disabled: dict</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blockNumber</span><span class="p">,</span> <span class="n">lostRewards</span><span class="p">,</span> <span class="n">disabled</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blockNumber</span> <span class="o">=</span> <span class="n">blockNumber</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lostRewards</span> <span class="o">=</span> <span class="n">lostRewards</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disabled</span> <span class="o">=</span> <span class="n">disabled</span></div>
+
+
+<div class="viewcode-block" id="ForkProof"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.block.ForkProof/#nimiqclient.models.block.ForkProof">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ForkProof</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fork proof returned by the server</span>
+
+<span class="sd">    :param blockNumber: Block number for the fork proof.</span>
+<span class="sd">    :type blockNumber: int</span>
+<span class="sd">    :param viewNumber: View number for the fork proof.</span>
+<span class="sd">    :type viewNumber: int</span>
+<span class="sd">    :param hashes: List of hashes of the fork proof. The length of the list is</span>
+<span class="sd">        always 2.</span>
+<span class="sd">    :type hashes: List of (str)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blockNumber</span><span class="p">,</span> <span class="n">viewNumber</span><span class="p">,</span> <span class="n">hashes</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blockNumber</span> <span class="o">=</span> <span class="n">blockNumber</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">viewNumber</span> <span class="o">=</span> <span class="n">viewNumber</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hashes</span> <span class="o">=</span> <span class="n">hashes</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

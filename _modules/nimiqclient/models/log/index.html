@@ -1,0 +1,664 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nimiqclient.models.log &mdash; Albatross Nimiq Python Client 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js?v=43f7dc57"></script>
+      <script src="../../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex/" />
+    <link rel="search" title="Search" href="../../../../search/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../" class="icon icon-home">
+            Albatross Nimiq Python Client
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_autosummary/nimiqclient/">nimiqclient</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../">Albatross Nimiq Python Client</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../">Module code</a></li>
+      <li class="breadcrumb-item active">nimiqclient.models.log</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for nimiqclient.models.log</h1><div class="highlight"><pre>
+<span></span><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CreateStakerLog&quot;</span><span class="p">,</span> <span class="s2">&quot;CreateValidatorLog&quot;</span><span class="p">,</span> <span class="s2">&quot;DeleteValidatorLog&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;HTLCCreateLog&quot;</span><span class="p">,</span> <span class="s2">&quot;HTLCEarlyResolveLog&quot;</span><span class="p">,</span> <span class="s2">&quot;HTLCRegularTransferLog&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;HTLCTimeoutResolveLog&quot;</span><span class="p">,</span> <span class="s2">&quot;InactivateValidatorLog&quot;</span><span class="p">,</span> <span class="s2">&quot;Log&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;LogType&quot;</span><span class="p">,</span> <span class="s2">&quot;ParkLog&quot;</span><span class="p">,</span> <span class="s2">&quot;PayFeeLog&quot;</span><span class="p">,</span> <span class="s2">&quot;PayoutRewardLog&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;ReactivateValidatorLog&quot;</span><span class="p">,</span> <span class="s2">&quot;RevertContractLog&quot;</span><span class="p">,</span> <span class="s2">&quot;SlashLog&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;StakeLog&quot;</span><span class="p">,</span> <span class="s2">&quot;TransferLog&quot;</span><span class="p">,</span> <span class="s2">&quot;UnparkValidatorLog&quot;</span><span class="p">,</span> <span class="s2">&quot;UnstakeLog&quot;</span><span class="p">,</span>
+           <span class="s2">&quot;UpdateStakerLog&quot;</span><span class="p">,</span> <span class="s2">&quot;UpdateValidatorLog&quot;</span><span class="p">,</span> <span class="s2">&quot;VestingCreateLog&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="LogType"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.LogType/#nimiqclient.models.log.LogType">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">LogType</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Type of a Nimiq log.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">PAY_FEE</span> <span class="o">=</span> <span class="s1">&#39;pay-fee&#39;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pay fee log.&quot;&quot;&quot;</span>
+    <span class="n">TRANSFER</span> <span class="o">=</span> <span class="s1">&#39;transfer&#39;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transfer log.&quot;&quot;&quot;</span>
+    <span class="n">HTLC_CREATE</span> <span class="o">=</span> <span class="s1">&#39;htlc-create&#39;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;HTLC create log.&quot;&quot;&quot;</span>
+    <span class="n">HTLC_TIMEOUT_RESOLVE</span> <span class="o">=</span> <span class="s2">&quot;htlc-timeout-resolve&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;HTLC timeout resolve log.&quot;&quot;&quot;</span>
+    <span class="n">HTLC_REGULAR_TRANSFER</span> <span class="o">=</span> <span class="s2">&quot;htlc-regular-transfer&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;HTLC regular transfer log.&quot;&quot;&quot;</span>
+    <span class="n">HTLC_EARLY_RESOLVE</span> <span class="o">=</span> <span class="s2">&quot;htlc-early-resolve&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;HTLC regular early log.&quot;&quot;&quot;</span>
+    <span class="n">VESTING_CREATE</span> <span class="o">=</span> <span class="s2">&quot;vesting-create&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Vesting create log.&quot;&quot;&quot;</span>
+    <span class="n">CREATE_VALIDATOR</span> <span class="o">=</span> <span class="s2">&quot;create-validator&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create validator log.&quot;&quot;&quot;</span>
+    <span class="n">UPDATE_VALIDATOR</span> <span class="o">=</span> <span class="s2">&quot;update-validator&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update validator log.&quot;&quot;&quot;</span>
+    <span class="n">INACTIVATE_VALIDATOR</span> <span class="o">=</span> <span class="s2">&quot;inactivate-validator&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Inactivate validator log.&quot;&quot;&quot;</span>
+    <span class="n">REACTIVATE_VALIDATOR</span> <span class="o">=</span> <span class="s2">&quot;reactivate-validator&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reactivate validator log.&quot;&quot;&quot;</span>
+    <span class="n">UNPARK_VALIDATOR</span> <span class="o">=</span> <span class="s2">&quot;unpark-validator&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Unpark validator log.&quot;&quot;&quot;</span>
+    <span class="n">CREATE_STAKER</span> <span class="o">=</span> <span class="s2">&quot;create-staker&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create staker log.&quot;&quot;&quot;</span>
+    <span class="n">STAKE</span> <span class="o">=</span> <span class="s2">&quot;stake&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stake log.&quot;&quot;&quot;</span>
+    <span class="n">UPDATE_STAKER</span> <span class="o">=</span> <span class="s2">&quot;update-staker&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Update staker log.&quot;&quot;&quot;</span>
+    <span class="n">DELETE_VALIDATOR</span> <span class="o">=</span> <span class="s2">&quot;delete-validator&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete validator log.&quot;&quot;&quot;</span>
+    <span class="n">UNSTAKE</span> <span class="o">=</span> <span class="s2">&quot;unstake&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Unstake log.&quot;&quot;&quot;</span>
+    <span class="n">PAYOUT_REWARD</span> <span class="o">=</span> <span class="s2">&quot;payout-reward&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Payout reward log.&quot;&quot;&quot;</span>
+    <span class="n">PARK</span> <span class="o">=</span> <span class="s2">&quot;park&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Park log.&quot;&quot;&quot;</span>
+    <span class="n">SLASH</span> <span class="o">=</span> <span class="s2">&quot;slash&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Slash log.&quot;&quot;&quot;</span>
+    <span class="n">REVERT_CONTRACT</span> <span class="o">=</span> <span class="s2">&quot;revert-contract&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Revert contract log.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="Log"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.Log/#nimiqclient.models.log.Log">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Log</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
+
+<div class="viewcode-block" id="Log.get_log"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.Log/#nimiqclient.models.log.Log.get_log">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_log</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the specific log type from the dictionary data.</span>
+
+<span class="sd">        :param data: The dictionary containing the data.</span>
+<span class="sd">        :type data: dict</span>
+<span class="sd">        :return: Log object.</span>
+<span class="sd">        :rtype: Log or a subtype of Log.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># First we need to remove reserved words</span>
+        <span class="k">if</span> <span class="s1">&#39;from&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;from_&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;from&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Then do the decoding</span>
+        <span class="nb">type</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">PAY_FEE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">PayFeeLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">TRANSFER</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">TransferLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">HTLC_CREATE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">HTLCCreateLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">HTLC_TIMEOUT_RESOLVE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">HTLCTimeoutResolveLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">HTLC_REGULAR_TRANSFER</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">HTLCRegularTransferLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">HTLC_EARLY_RESOLVE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">HTLCEarlyResolveLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">VESTING_CREATE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">VestingCreateLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">CREATE_VALIDATOR</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">CreateValidatorLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">UPDATE_VALIDATOR</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">UpdateValidatorLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">INACTIVATE_VALIDATOR</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">InactivateValidatorLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">REACTIVATE_VALIDATOR</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ReactivateValidatorLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">UNPARK_VALIDATOR</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">UnparkValidatorLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">CREATE_STAKER</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">CreateStakerLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">STAKE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">StakeLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">UPDATE_STAKER</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">UpdateStakerLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">DELETE_VALIDATOR</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">DeleteValidatorLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">UNSTAKE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">UnstakeLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">PAYOUT_REWARD</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">PayoutRewardLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">PARK</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ParkLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">SLASH</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SlashLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">LogType</span><span class="o">.</span><span class="n">REVERT_CONTRACT</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">RevertContractLog</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Log</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PayFeeLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.PayFeeLog/#nimiqclient.models.log.PayFeeLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">PayFeeLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fee payment log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param from_: Sender of the fee associated with the log.</span>
+<span class="sd">    :type from_: str</span>
+<span class="sd">    :param fee: Fee associated with the log.</span>
+<span class="sd">    :type fee: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">from_</span><span class="p">,</span> <span class="n">fee</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PayFeeLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sender</span> <span class="o">=</span> <span class="n">from_</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fee</span> <span class="o">=</span> <span class="n">fee</span></div>
+
+
+<div class="viewcode-block" id="TransferLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.TransferLog/#nimiqclient.models.log.TransferLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TransferLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Transfer log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param from_: Sender of the transaction associated with the log.</span>
+<span class="sd">    :type from_: str</span>
+<span class="sd">    :param to: Recipient of the transaction associated with the log.</span>
+<span class="sd">    :type to: str</span>
+<span class="sd">    :param amount: Amount of the transaction associated with the log.</span>
+<span class="sd">    :type amount: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">from_</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TransferLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sender</span> <span class="o">=</span> <span class="n">from_</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipient</span> <span class="o">=</span> <span class="n">to</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amount</span> <span class="o">=</span> <span class="n">amount</span></div>
+
+
+<div class="viewcode-block" id="HTLCCreateLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.HTLCCreateLog/#nimiqclient.models.log.HTLCCreateLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">HTLCCreateLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    HTLC creation log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param contractAddress: Contract address of the HTLC associated with the</span>
+<span class="sd">        log.</span>
+<span class="sd">    :type contractAddress: str</span>
+<span class="sd">    :param sender: Sender of the HTLC associated with the log.</span>
+<span class="sd">    :type sender: str</span>
+<span class="sd">    :param recipient: Recipient of the HTLC associated with the log.</span>
+<span class="sd">    :type recipient: str</span>
+<span class="sd">    :param hashAlgorithm: Hash algorithm of the HTLC associated with the log.</span>
+<span class="sd">    :type hashAlgorithm: str</span>
+<span class="sd">    :param hashRoot: Hash root of the HTLC associated with the log.</span>
+<span class="sd">    :type hashRoot: str</span>
+<span class="sd">    :param hashCount: Hash count of the HTLC associated with the log.</span>
+<span class="sd">    :type hashCount: int</span>
+<span class="sd">    :param timeout: Timeout of the HTLC associated with the log.</span>
+<span class="sd">    :type timeout: int</span>
+<span class="sd">    :param totalAmount: Total amount of the HTLC associated with the log.</span>
+<span class="sd">    :type totalAmount: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">contractAddress</span><span class="p">,</span> <span class="n">sender</span><span class="p">,</span> <span class="n">recipient</span><span class="p">,</span>
+                 <span class="n">hashAlgorithm</span><span class="p">,</span> <span class="n">hashRoot</span><span class="p">,</span> <span class="n">hashCount</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">totalAmount</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TransferLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contractAddress</span> <span class="o">=</span> <span class="n">contractAddress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sender</span> <span class="o">=</span> <span class="n">sender</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipient</span> <span class="o">=</span> <span class="n">recipient</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hashAlgorithm</span> <span class="o">=</span> <span class="n">hashAlgorithm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hashRoot</span> <span class="o">=</span> <span class="n">hashRoot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hashCount</span> <span class="o">=</span> <span class="n">hashCount</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">totalAmount</span> <span class="o">=</span> <span class="n">totalAmount</span></div>
+
+
+<div class="viewcode-block" id="HTLCTimeoutResolveLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.HTLCTimeoutResolveLog/#nimiqclient.models.log.HTLCTimeoutResolveLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">HTLCTimeoutResolveLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    HTLC timeout resolve log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param contractAddress: Contract address of the HTLC associated with the</span>
+<span class="sd">        log.</span>
+<span class="sd">    :type contractAddress: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">contractAddress</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">HTLCTimeoutResolveLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contractAddress</span> <span class="o">=</span> <span class="n">contractAddress</span></div>
+
+
+<div class="viewcode-block" id="HTLCRegularTransferLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.HTLCRegularTransferLog/#nimiqclient.models.log.HTLCRegularTransferLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">HTLCRegularTransferLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    HTLC regular transfer log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param contractAddress: Contract address of the HTLC associated with the</span>
+<span class="sd">        log.</span>
+<span class="sd">    :type contractAddress: str</span>
+<span class="sd">    :param preImage: Pre-image of the HTLC associated with the log.</span>
+<span class="sd">    :type preImage: str</span>
+<span class="sd">    :param hashDepth: Hash depth of the HTLC associated with the log.</span>
+<span class="sd">    :type hashDepth: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">contractAddress</span><span class="p">,</span> <span class="n">preImage</span><span class="p">,</span> <span class="n">hashDepth</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">HTLCRegularTransferLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contractAddress</span> <span class="o">=</span> <span class="n">contractAddress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preImage</span> <span class="o">=</span> <span class="n">preImage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hashDepth</span> <span class="o">=</span> <span class="n">hashDepth</span></div>
+
+
+<div class="viewcode-block" id="HTLCEarlyResolveLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.HTLCEarlyResolveLog/#nimiqclient.models.log.HTLCEarlyResolveLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">HTLCEarlyResolveLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    HTLC early resolve log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param contractAddress: Contract address of the HTLC associated with the</span>
+<span class="sd">        log.</span>
+<span class="sd">    :type contractAddress: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">contractAddress</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">HTLCEarlyResolveLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contractAddress</span> <span class="o">=</span> <span class="n">contractAddress</span></div>
+
+
+<div class="viewcode-block" id="VestingCreateLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.VestingCreateLog/#nimiqclient.models.log.VestingCreateLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">VestingCreateLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Vesting creation log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param contractOwner: Contract owner of the Vesting associated with the</span>
+<span class="sd">        log.</span>
+<span class="sd">    :type contractOwner: str</span>
+<span class="sd">    :param owner: Owner of the Vesting associated with the log.</span>
+<span class="sd">    :type owner: str</span>
+<span class="sd">    :param startTime: Start time of the Vesting associated with the log.</span>
+<span class="sd">    :type startTime: int</span>
+<span class="sd">    :param timeStep: Time step of the Vesting associated with the log.</span>
+<span class="sd">    :type timeStep: int</span>
+<span class="sd">    :param stepAmount: Step amount of the Vesting associated with the log.</span>
+<span class="sd">    :type stepAmount: int</span>
+<span class="sd">    :param totalAmount: Total amount of the Vesting associated with the log.</span>
+<span class="sd">    :type totalAmount: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">contractOwner</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">startTime</span><span class="p">,</span> <span class="n">timeStep</span><span class="p">,</span>
+                 <span class="n">stepAmount</span><span class="p">,</span> <span class="n">totalAmount</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">VestingCreateLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contractOwner</span> <span class="o">=</span> <span class="n">contractOwner</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">owner</span> <span class="o">=</span> <span class="n">owner</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startTime</span> <span class="o">=</span> <span class="n">startTime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeStep</span> <span class="o">=</span> <span class="n">timeStep</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stepAmount</span> <span class="o">=</span> <span class="n">stepAmount</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">totalAmount</span> <span class="o">=</span> <span class="n">totalAmount</span></div>
+
+
+<div class="viewcode-block" id="CreateValidatorLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.CreateValidatorLog/#nimiqclient.models.log.CreateValidatorLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CreateValidatorLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validator creation log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param validatorAddress: Address of the validator associated with the log.</span>
+<span class="sd">    :type validatorAddress: str</span>
+<span class="sd">    :param rewardAddress: Reward address of the validator associated with the</span>
+<span class="sd">        log.</span>
+<span class="sd">    :type rewardAddress: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">validatorAddress</span><span class="p">,</span> <span class="n">rewardAddress</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CreateValidatorLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validatorAddress</span> <span class="o">=</span> <span class="n">validatorAddress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rewardAddress</span> <span class="o">=</span> <span class="n">rewardAddress</span></div>
+
+
+<div class="viewcode-block" id="UpdateValidatorLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.UpdateValidatorLog/#nimiqclient.models.log.UpdateValidatorLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">UpdateValidatorLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validator update log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param validatorAddress: Address of the validator associated with the log.</span>
+<span class="sd">    :type validatorAddress: str</span>
+<span class="sd">    :param oldRewardAddress: Old reward address of the validator associated</span>
+<span class="sd">        with the log.</span>
+<span class="sd">    :type oldRewardAddress: str</span>
+<span class="sd">    :param newRewardAddress: New reward address of the validator associated</span>
+<span class="sd">        with the log.</span>
+<span class="sd">    :type newRewardAddress: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">validatorAddress</span><span class="p">,</span> <span class="n">oldRewardAddress</span><span class="p">,</span>
+                 <span class="n">newRewardAddress</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">UpdateValidatorLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validatorAddress</span> <span class="o">=</span> <span class="n">validatorAddress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oldRewardAddress</span> <span class="o">=</span> <span class="n">oldRewardAddress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">newRewardAddress</span> <span class="o">=</span> <span class="n">newRewardAddress</span></div>
+
+
+<div class="viewcode-block" id="InactivateValidatorLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.InactivateValidatorLog/#nimiqclient.models.log.InactivateValidatorLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">InactivateValidatorLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validator inactivation log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param validatorAddress: Address of the validator associated with the log.</span>
+<span class="sd">    :type validatorAddress: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">validatorAddress</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">InactivateValidatorLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validatorAddress</span> <span class="o">=</span> <span class="n">validatorAddress</span></div>
+
+
+<div class="viewcode-block" id="ReactivateValidatorLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.ReactivateValidatorLog/#nimiqclient.models.log.ReactivateValidatorLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ReactivateValidatorLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validator reactivation log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param validatorAddress: Address of the validator associated with the log.</span>
+<span class="sd">    :type validatorAddress: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">validatorAddress</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ReactivateValidatorLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validatorAddress</span> <span class="o">=</span> <span class="n">validatorAddress</span></div>
+
+
+<div class="viewcode-block" id="UnparkValidatorLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.UnparkValidatorLog/#nimiqclient.models.log.UnparkValidatorLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">UnparkValidatorLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validator unparking log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param validatorAddress: Address of the validator associated with the log.</span>
+<span class="sd">    :type validatorAddress: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">validatorAddress</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">UnparkValidatorLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validatorAddress</span> <span class="o">=</span> <span class="n">validatorAddress</span></div>
+
+
+<div class="viewcode-block" id="CreateStakerLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.CreateStakerLog/#nimiqclient.models.log.CreateStakerLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CreateStakerLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Staker creation log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param stakerAddress: Address of the staker associated with the log.</span>
+<span class="sd">    :type stakerAddress: str</span>
+<span class="sd">    :param validatorAddress: Validator address of the staker associated with</span>
+<span class="sd">        the log.</span>
+<span class="sd">    :type validatorAddress: str</span>
+<span class="sd">    :param value: Stake value associated with the log.</span>
+<span class="sd">    :type value: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">stakerAddress</span><span class="p">,</span> <span class="n">validatorAddress</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CreateStakerLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stakerAddress</span> <span class="o">=</span> <span class="n">stakerAddress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validatorAddress</span> <span class="o">=</span> <span class="n">validatorAddress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="StakeLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.StakeLog/#nimiqclient.models.log.StakeLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">StakeLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stake log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param stakerAddress: Address of the staker associated with the log.</span>
+<span class="sd">    :type stakerAddress: str</span>
+<span class="sd">    :param value: Stake value associated with the log.</span>
+<span class="sd">    :type value: int</span>
+<span class="sd">    :param validatorAddress: Optional validator address of the staker</span>
+<span class="sd">        associated with the log.</span>
+<span class="sd">    :type validatorAddress: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">stakerAddress</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">validatorAddress</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">StakeLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stakerAddress</span> <span class="o">=</span> <span class="n">stakerAddress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validatorAddress</span> <span class="o">=</span> <span class="n">validatorAddress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="UpdateStakerLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.UpdateStakerLog/#nimiqclient.models.log.UpdateStakerLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">UpdateStakerLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Staker update log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param stakerAddress: Address of the staker associated with the log.</span>
+<span class="sd">    :type stakerAddress: str</span>
+<span class="sd">    :param oldValidatorAddress: Optional old validator address of the staker</span>
+<span class="sd">        associated with the log.</span>
+<span class="sd">    :type oldValidatorAddress: str</span>
+<span class="sd">    :param newValidatorAddress: Optional new validator address of the staker</span>
+<span class="sd">        associated with the log.</span>
+<span class="sd">    :type newValidatorAddress: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">stakerAddress</span><span class="p">,</span> <span class="n">oldValidatorAddress</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">newValidatorAddress</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">UpdateStakerLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stakerAddress</span> <span class="o">=</span> <span class="n">stakerAddress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">oldValidatorAddress</span> <span class="o">=</span> <span class="n">oldValidatorAddress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">newValidatorAddress</span> <span class="o">=</span> <span class="n">newValidatorAddress</span></div>
+
+
+<div class="viewcode-block" id="DeleteValidatorLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.DeleteValidatorLog/#nimiqclient.models.log.DeleteValidatorLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DeleteValidatorLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validator deletion log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param validatorAddress: Address of the validator associated with the log.</span>
+<span class="sd">    :type validatorAddress: str</span>
+<span class="sd">    :param rewardAddress: Reward address of the validator associated with the</span>
+<span class="sd">        log.</span>
+<span class="sd">    :type rewardAddress: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">validatorAddress</span><span class="p">,</span> <span class="n">rewardAddress</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DeleteValidatorLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validatorAddress</span> <span class="o">=</span> <span class="n">validatorAddress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rewardAddress</span> <span class="o">=</span> <span class="n">rewardAddress</span></div>
+
+
+<div class="viewcode-block" id="UnstakeLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.UnstakeLog/#nimiqclient.models.log.UnstakeLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">UnstakeLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Unstake log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param stakerAddress: Address of the staker associated with the log.</span>
+<span class="sd">    :type stakerAddress: str</span>
+<span class="sd">    :param value: Stake value associated with the log.</span>
+<span class="sd">    :type value: int</span>
+<span class="sd">    :param validatorAddress: Optional validator address of the staker</span>
+<span class="sd">        associated with the log.</span>
+<span class="sd">    :type validatorAddress: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">stakerAddress</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">validatorAddress</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">UnstakeLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stakerAddress</span> <span class="o">=</span> <span class="n">stakerAddress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validatorAddress</span> <span class="o">=</span> <span class="n">validatorAddress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="PayoutRewardLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.PayoutRewardLog/#nimiqclient.models.log.PayoutRewardLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">PayoutRewardLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Payout reward log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param to: Recipient of the payout reward associated with the log.</span>
+<span class="sd">    :type to: str</span>
+<span class="sd">    :param value: Value of the transaction associated with the log.</span>
+<span class="sd">    :type value: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PayoutRewardLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipient</span> <span class="o">=</span> <span class="n">to</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="ParkLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.ParkLog/#nimiqclient.models.log.ParkLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ParkLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validator parking log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param validatorAddress: Address of the validator associated with the log.</span>
+<span class="sd">    :type validatorAddress: str</span>
+<span class="sd">    :param eventBlock: Event block associated with the log.</span>
+<span class="sd">    :type eventBlock: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">validatorAddress</span><span class="p">,</span> <span class="n">eventBlock</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ParkLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validatorAddress</span> <span class="o">=</span> <span class="n">validatorAddress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eventBlock</span> <span class="o">=</span> <span class="n">eventBlock</span></div>
+
+
+<div class="viewcode-block" id="SlashLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.SlashLog/#nimiqclient.models.log.SlashLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SlashLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validator slashing log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param validatorAddress: Address of the validator associated with the log.</span>
+<span class="sd">    :type validatorAddress: str</span>
+<span class="sd">    :param eventBlock: Event block associated with the log.</span>
+<span class="sd">    :type eventBlock: int</span>
+<span class="sd">    :param slot: Slot associated with the log.</span>
+<span class="sd">    :type slot: int</span>
+<span class="sd">    :param newlyDisabled: Flag indicating if the validator has been newly</span>
+<span class="sd">        disabled or not.</span>
+<span class="sd">    :type newlyDisabled: bool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">validatorAddress</span><span class="p">,</span> <span class="n">eventBlock</span><span class="p">,</span> <span class="n">slot</span><span class="p">,</span>
+                 <span class="n">newlyDisabled</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SlashLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validatorAddress</span> <span class="o">=</span> <span class="n">validatorAddress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eventBlock</span> <span class="o">=</span> <span class="n">eventBlock</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slot</span> <span class="o">=</span> <span class="n">slot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">newlyDisabled</span> <span class="o">=</span> <span class="n">newlyDisabled</span></div>
+
+
+<div class="viewcode-block" id="RevertContractLog"><a class="viewcode-back" href="../../../../_autosummary/nimiqclient.models.log.RevertContractLog/#nimiqclient.models.log.RevertContractLog">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RevertContractLog</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Contract reversion log returned by the server.</span>
+
+<span class="sd">    :param type: The log type associated with the log.</span>
+<span class="sd">    :type type: LogType</span>
+<span class="sd">    :param contractAddress: Address of the contract associated with the log.</span>
+<span class="sd">    :type contractAddress: str</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">contractAddress</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RevertContractLog</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contractAddress</span> <span class="o">=</span> <span class="n">contractAddress</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
