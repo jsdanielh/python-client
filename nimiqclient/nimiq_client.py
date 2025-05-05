@@ -57,7 +57,7 @@ class NimiqClient:
         self.auth = HTTPBasicAuth(user, password)
 
         if self.websocket:
-            self.url = "{0}/{1}{2}".format(self.url, scheme, url_suffix)
+            self.url = "{0}/ws{1}".format(self.url, url_suffix)
             self.session = WebSocketRpcClient(
                 self.url,
                 NimiqRPCMethods(self),
