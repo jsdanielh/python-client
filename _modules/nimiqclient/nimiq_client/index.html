@@ -1,0 +1,1130 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nimiqclient.nimiq_client &mdash; Albatross Nimiq Python Client 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=43f7dc57"></script>
+      <script src="../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex/" />
+    <link rel="search" title="Search" href="../../../search/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../" class="icon icon-home">
+            Albatross Nimiq Python Client
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../_autosummary/nimiqclient/">nimiqclient</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../">Albatross Nimiq Python Client</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../">Module code</a></li>
+      <li class="breadcrumb-item active">nimiqclient.nimiq_client</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for nimiqclient.nimiq_client</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">.callback</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callback</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.account</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.block</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.state</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.block_log</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.inherent</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.mempool</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.node</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.peer</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.staker</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.state</span><span class="w"> </span><span class="kn">import</span> <span class="n">StateData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.state</span><span class="w"> </span><span class="kn">import</span> <span class="n">BlockchainState</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.transaction</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models.validator</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.websocket_rpc</span><span class="w"> </span><span class="kn">import</span> <span class="n">NimiqRPCMethods</span><span class="p">,</span> <span class="n">NimiqSerializer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.error_exception</span><span class="w"> </span><span class="kn">import</span> <span class="n">InternalErrorException</span><span class="p">,</span> <span class="n">RemoteErrorException</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fastapi_websocket_rpc</span><span class="w"> </span><span class="kn">import</span> <span class="n">WebSocketRpcClient</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">requests.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTTPBasicAuth</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;NimiqClient&quot;</span><span class="p">,</span> <span class="s2">&quot;InternalErrorException&quot;</span><span class="p">,</span> <span class="s2">&quot;RemoteErrorException&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="NimiqClient"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">NimiqClient</span><span class="p">:</span>
+
+    <span class="n">WS_RESPONSE_TIMEOUT</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    API client for the Nimiq JSON RPC server.</span>
+
+<span class="sd">    :param scheme: Protocol scheme, &quot;http&quot; or &quot;https&quot; or &quot;ws&quot;.</span>
+<span class="sd">    :type scheme: str, optional</span>
+<span class="sd">    :param user: Authorized user.</span>
+<span class="sd">    :type user: str, optional</span>
+<span class="sd">    :param password: Password for the authorized user.</span>
+<span class="sd">    :type password: str, optional</span>
+<span class="sd">    :param host: Host IP address.</span>
+<span class="sd">    :type host: str, optional</span>
+<span class="sd">    :param port: Host port.</span>
+<span class="sd">    :type port: int, optional</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">scheme</span><span class="o">=</span><span class="s2">&quot;http&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8648</span><span class="p">,</span>
+        <span class="n">url_suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">://</span><span class="si">{1}</span><span class="s2">:</span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">scheme</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ws&quot;</span><span class="p">,</span> <span class="s2">&quot;wss&quot;</span><span class="p">,</span> <span class="s2">&quot;http&quot;</span><span class="p">,</span> <span class="s2">&quot;https&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">InternalErrorException</span><span class="p">(</span><span class="s2">&quot;Invalid scheme: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">scheme</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span> <span class="o">=</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s2">&quot;ws&quot;</span> <span class="ow">or</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s2">&quot;wss&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">auth</span> <span class="o">=</span> <span class="n">HTTPBasicAuth</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">/ws</span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">url_suffix</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">WebSocketRpcClient</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
+                <span class="n">NimiqRPCMethods</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span>
+                <span class="n">serializing_socket_cls</span><span class="o">=</span><span class="n">NimiqSerializer</span><span class="p">,</span>
+                <span class="n">default_response_timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">WS_RESPONSE_TIMEOUT</span><span class="p">,</span>
+                <span class="n">ping_interval</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+            <span class="c1"># Disable ping messages since the Nimiq server doesn&#39;t support it</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">MAX_CONNECTION_ATTEMPTS</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">/</span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">url_suffix</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="fm">__aenter__</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aexit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="fm">__aexit__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used in all JSONRPC requests to fetch the data.</span>
+
+<span class="sd">        :param method: JSONRPC method.</span>
+<span class="sd">        :type method: str</span>
+<span class="sd">        :param params: Parameters used by the request.</span>
+<span class="sd">        :type params: list</span>
+<span class="sd">        :return: If successful, returns the model representation of the</span>
+<span class="sd">            result, None otherwise.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+                <span class="n">method</span><span class="p">,</span>
+                <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">)},</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">WS_RESPONSE_TIMEOUT</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">result</span>
+
+        <span class="c1"># increase the JSONRPC client request id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># make JSON object to send to the server</span>
+        <span class="n">call_object</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;jsonrpc&quot;</span><span class="p">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">method</span><span class="p">,</span>
+            <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">),</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">call_object</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">call_object</span><span class="p">)</span>
+
+        <span class="c1"># make request</span>
+        <span class="n">req_error</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">resp_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">call_object</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auth</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">req_error</span> <span class="o">=</span> <span class="n">e</span>
+        <span class="c1"># raise if there was any error</span>
+        <span class="k">if</span> <span class="n">req_error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InternalErrorException</span><span class="p">(</span><span class="n">req_error</span><span class="p">)</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">resp_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">RemoteErrorException</span><span class="p">(</span>
+                <span class="n">error</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;message&quot;</span><span class="p">),</span> <span class="n">error</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;code&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">resp_object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;result&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_call_and_subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">decoder</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span>
+                                  <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">websocket</span><span class="p">:</span>
+            <span class="n">callback_obj</span> <span class="o">=</span> <span class="n">Callback</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">decoder</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">[</span><span class="n">method</span><span class="p">]</span> <span class="o">=</span> <span class="n">callback_obj</span>
+            <span class="n">subscription</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="p">[</span><span class="n">method</span><span class="p">]</span> <span class="o">=</span> <span class="n">subscription</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InternalErrorException</span><span class="p">(</span>
+                <span class="s2">&quot;Protocol </span><span class="si">{}</span><span class="s2"> doesn&#39;t support RPC subscription&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">scheme</span><span class="p">))</span>
+
+<div class="viewcode-block" id="NimiqClient.accounts"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.accounts">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">accounts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of addresses owned by client.</span>
+
+<span class="sd">        :return: List of Accounts owned by the client.</span>
+<span class="sd">        :rtype: list of (str)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;listAccounts&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.batch_number"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.batch_number">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">batch_number</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the batch number.</span>
+
+<span class="sd">        :return: The current batch number the client is on.</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getBatchNumber&quot;</span><span class="p">))[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.block_number"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.block_number">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">block_number</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the height of most( recent block.)[&#39;data&#39;]</span>
+
+<span class="sd">        :return: The current block height the client is on.</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getBlockNumber&quot;</span><span class="p">))[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.consensus"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.consensus">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">consensus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns information on the current consensus state.</span>
+
+<span class="sd">        :return: Consensus state. &quot;established&quot; is the value for a good state,</span>
+<span class="sd">            other values indicate bad.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;isConsensusEstablished&quot;</span><span class="p">))[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.create_account"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.create_account">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">passphrase</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a new account and stores its private key in the client store.</span>
+
+<span class="sd">        :param passphrase: Private Key passphrase to add to the account.</span>
+<span class="sd">        :type passphrase: str</span>
+<span class="sd">        :return: Information on the wallet that was created using the command.</span>
+<span class="sd">        :rtype: WalletAccount</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;createAccount&quot;</span><span class="p">,</span> <span class="n">passphrase</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">WalletAccount</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="NimiqClient.epoch_number"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.epoch_number">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">epoch_number</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the epoch number.</span>
+
+<span class="sd">        :return: The current epoch number the client is on.</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getEpochNumber&quot;</span><span class="p">))[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_account_by_address"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_account_by_address">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_account_by_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns details for the account of given address.</span>
+
+<span class="sd">        :param address: Address to get account details.</span>
+<span class="sd">        :type address: str</span>
+<span class="sd">        :return: Details about the account. Returns the default empty basic</span>
+<span class="sd">            account for non-existing accounts.</span>
+<span class="sd">        :rtype: StateData[Account or VestingContract or HTLC]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getAccountByAddress&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+        <span class="n">account</span> <span class="o">=</span> <span class="n">Account</span><span class="o">.</span><span class="n">get_account</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">BlockchainState</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">StateData</span><span class="p">[</span><span class="n">Account</span><span class="p">](</span><span class="n">state</span><span class="p">,</span> <span class="n">account</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_accounts"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_accounts">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_accounts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns details for all of the the accounts in the accounts tree.</span>
+
+<span class="sd">        :return: Details for all of the the accounts in the accounts tree.</span>
+<span class="sd">        :rtype: StateData[list of (Account or VestingContract or HTLC)]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getAccounts&quot;</span><span class="p">)</span>
+        <span class="n">accounts</span> <span class="o">=</span> <span class="p">[</span><span class="n">Account</span><span class="o">.</span><span class="n">get_account</span><span class="p">(</span><span class="n">account</span><span class="p">)</span> <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]]</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">BlockchainState</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">StateData</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Account</span><span class="p">]](</span><span class="n">state</span><span class="p">,</span> <span class="n">accounts</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_active_validators"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_active_validators">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_active_validators</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary with the set of the current active validators.</span>
+
+<span class="sd">        :return: The current set of active validators using a dictionary with</span>
+<span class="sd">            the validator address as key (str) and the balance as value (int).</span>
+<span class="sd">        :rtype: StateData[List of (Validator)]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getActiveValidators&quot;</span><span class="p">)</span>
+        <span class="n">validators</span> <span class="o">=</span> <span class="p">[</span><span class="n">Validator</span><span class="p">(</span><span class="o">**</span><span class="n">validator</span><span class="p">)</span> <span class="k">for</span> <span class="n">validator</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]]</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">BlockchainState</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">StateData</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Validator</span><span class="p">]](</span><span class="n">state</span><span class="p">,</span> <span class="n">validators</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_block_by_hash"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_block_by_hash">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_block_by_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">hash</span><span class="p">,</span> <span class="n">include_transactions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns information about a block by hash.</span>
+
+<span class="sd">        :param hash: Hash of the block to gather information on.</span>
+<span class="sd">        :type hash: str</span>
+<span class="sd">        :param include_transactions: If True it returns the full transaction</span>
+<span class="sd">            objects, if False only the hashes of the transactions.</span>
+<span class="sd">        :type include_transactions: bool, optional</span>
+<span class="sd">        :return: A block object or None when no block was found.</span>
+<span class="sd">        :rtype: Block or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getBlockByHash&quot;</span><span class="p">,</span> <span class="nb">hash</span><span class="p">,</span> <span class="n">include_transactions</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Block</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span> <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_block_by_number"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_block_by_number">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_block_by_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">include_transactions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns information about a block by block number.</span>
+
+<span class="sd">        :param height: The height of the block to gather information on.</span>
+<span class="sd">        :type height: int</span>
+<span class="sd">        :param include_transactions: If True it returns the full transaction</span>
+<span class="sd">            objects, if False only the hashes of the transactions.</span>
+<span class="sd">        :type include_transactions: bool, optional</span>
+<span class="sd">        :return: A block object or None when no block was found.</span>
+<span class="sd">        :rtype: Block or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getBlockByNumber&quot;</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span>
+                                  <span class="n">include_transactions</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Block</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span> <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_block_transaction_count_by_hash"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_block_transaction_count_by_hash">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_block_transaction_count_by_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">hash</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the number of transactions in a block from a block matching</span>
+<span class="sd">        the given block hash.</span>
+
+<span class="sd">        :param hash: Hash of the block.</span>
+<span class="sd">        :type hash: str</span>
+<span class="sd">        :return: Number of transactions in the block found, or None, when no</span>
+<span class="sd">            block was found.</span>
+<span class="sd">        :rtype: int or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getBlockTransactionCountByHash&quot;</span><span class="p">,</span> <span class="nb">hash</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_block_transaction_count_by_number"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_block_transaction_count_by_number">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_block_transaction_count_by_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the number of transactions in a block matching the given block</span>
+<span class="sd">        number.</span>
+
+<span class="sd">        :param height: Height of the block.</span>
+<span class="sd">        :type height: int</span>
+<span class="sd">        :return: Number of transactions in the block found, or None, when no</span>
+<span class="sd">            block was found.</span>
+<span class="sd">        :rtype: int or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getBlockTransactionCountByNumber&quot;</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_callbacks"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_callbacks">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary containing all callbacks that the client can call</span>
+<span class="sd">        when an RPC request is received.</span>
+
+<span class="sd">        :return: Dictionary containing all RPC subscription IDs.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_current_slashed_slots"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_current_slashed_slots">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_current_slashed_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current slashed slots.</span>
+
+<span class="sd">        :return: Current slashed slots.</span>
+<span class="sd">        :rtype: StateData[SlashedSlots]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getCurrentSlashedSlots&quot;</span><span class="p">)</span>
+        <span class="n">slashed_slots</span> <span class="o">=</span> <span class="n">SlashedSlots</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">BlockchainState</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">StateData</span><span class="p">[</span><span class="n">SlashedSlots</span><span class="p">](</span><span class="n">state</span><span class="p">,</span> <span class="n">slashed_slots</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_inherents_by_batch_number"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_inherents_by_batch_number">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_inherents_by_batch_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_number</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns information about inherents by batch number.</span>
+
+<span class="sd">        :param batch_number: Batch number for which the inherents are going to</span>
+<span class="sd">            be gathered.</span>
+<span class="sd">        :type batch_number: int</span>
+<span class="sd">        :return: A list of inherent objects.</span>
+<span class="sd">        :rtype: List of (Inherent)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="s2">&quot;getInherentsByBatchNumber&quot;</span><span class="p">,</span> <span class="n">batch_number</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">Inherent</span><span class="p">(</span><span class="o">**</span><span class="n">inherent</span><span class="p">)</span> <span class="k">for</span> <span class="n">inherent</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_inherents_by_block_number"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_inherents_by_block_number">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_inherents_by_block_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns information about inherents by block number.</span>
+
+<span class="sd">        :param height: Height of the block containing the inherents.</span>
+<span class="sd">        :type height: int</span>
+<span class="sd">        :return: A list of inherent objects.</span>
+<span class="sd">        :rtype: List of (Inherent)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="s2">&quot;getInherentsByBlockNumber&quot;</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">Inherent</span><span class="p">(</span><span class="o">**</span><span class="n">inherent</span><span class="p">)</span> <span class="k">for</span> <span class="n">inherent</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_latest_block"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_latest_block">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_latest_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_body</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns information the latest block.</span>
+
+<span class="sd">        :return: The latest block in the chain.</span>
+<span class="sd">        :rtype: Block</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getLatestBlock&quot;</span><span class="p">,</span> <span class="n">include_body</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Block</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_parked_validators"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_parked_validators">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_parked_validators</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the set of current parked validators.</span>
+
+<span class="sd">        :return: Set of current parked validators.</span>
+<span class="sd">        :rtype: ParkedValidators</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getParkedValidators&quot;</span><span class="p">)</span>
+        <span class="n">parked_validators</span> <span class="o">=</span> <span class="n">ParkedValidators</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">BlockchainState</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">StateData</span><span class="p">[</span><span class="n">ParkedValidators</span><span class="p">](</span><span class="n">state</span><span class="p">,</span> <span class="n">parked_validators</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_previous_slashed_slots"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_previous_slashed_slots">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_previous_slashed_slots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the previous slashed slots.</span>
+
+<span class="sd">        :return: Previous slashed slots.</span>
+<span class="sd">        :rtype: StateData[SlashedSlots]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getPreviousSlashedSlots&quot;</span><span class="p">)</span>
+        <span class="n">slashed_slots</span> <span class="o">=</span> <span class="n">SlashedSlots</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">BlockchainState</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;metasata&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">StateData</span><span class="p">[</span><span class="n">SlashedSlots</span><span class="p">](</span><span class="n">state</span><span class="p">,</span> <span class="n">slashed_slots</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_slot_at"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_slot_at">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_slot_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block_number</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the slot at a specific block number</span>
+
+<span class="sd">        :param block_number: Block number for which the slot is queried.</span>
+<span class="sd">        :type block_number: int</span>
+<span class="sd">        :param offset: Optional block number offset.</span>
+<span class="sd">        :type int, optional</span>
+<span class="sd">        :return: The slot at the specified block number.</span>
+<span class="sd">        :rtype: StateData[Slot]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getSlotAt&quot;</span><span class="p">,</span> <span class="n">block_number</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+        <span class="n">slot</span> <span class="o">=</span> <span class="n">Slot</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">BlockchainState</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">StateData</span><span class="p">[</span><span class="n">Slot</span><span class="p">](</span><span class="n">state</span><span class="p">,</span> <span class="n">slot</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_subscriptions"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_subscriptions">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_subscriptions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a dictionary containing all RPC subscription IDs the client</span>
+<span class="sd">        has subscribed to.</span>
+
+<span class="sd">        :return: Dictionary containing all RPC subscription IDs.</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_raw_transaction_info"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_raw_transaction_info">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_raw_transaction_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transaction</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deserializes hex-encoded transaction and returns a transaction object.</span>
+
+<span class="sd">        :param transaction: The hex encoded signed transaction.</span>
+<span class="sd">        :type transaction: str</span>
+<span class="sd">        :return: The transaction object.</span>
+<span class="sd">        :rtype: Transaction</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getRawTransactionInfo&quot;</span><span class="p">,</span> <span class="n">transaction</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Transaction</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_staker_by_address"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_staker_by_address">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_staker_by_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a staker using its address</span>
+
+<span class="sd">        :param address: Address of the staker.</span>
+<span class="sd">        :type address: str</span>
+<span class="sd">        :return: The staker object.</span>
+<span class="sd">        :rtype: StateData[Staker]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getStakerByAddress&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+        <span class="n">staker</span> <span class="o">=</span> <span class="n">Staker</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">BlockchainState</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">StateData</span><span class="p">[</span><span class="n">Staker</span><span class="p">](</span><span class="n">state</span><span class="p">,</span> <span class="n">staker</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_stakers_by_validator_address"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_stakers_by_validator_address">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_stakers_by_validator_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the stakers for a validator given its address</span>
+
+<span class="sd">        :param address: Address of the validator.</span>
+<span class="sd">        :type address: str</span>
+<span class="sd">        :return: The staker object.</span>
+<span class="sd">        :rtype: StateData[list of (Staker)]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getStakersByValidatorAddress&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+        <span class="n">stakers</span> <span class="o">=</span> <span class="p">[</span><span class="n">Staker</span><span class="p">(</span><span class="o">**</span><span class="n">staker</span><span class="p">)</span> <span class="k">for</span> <span class="n">staker</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]]</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">BlockchainState</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">StateData</span><span class="p">[</span><span class="n">Staker</span><span class="p">](</span><span class="n">state</span><span class="p">,</span> <span class="n">stakers</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_transactions_by_address"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_transactions_by_address">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_transactions_by_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span>
+                                          <span class="n">number_of_transactions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the latest transactions successfully performed by or for an</span>
+<span class="sd">        address. Note that this information might change when blocks are</span>
+<span class="sd">        reverted on the local state due to forks.</span>
+
+<span class="sd">        :param address: Address of which transactions should be gathered.</span>
+<span class="sd">        :type address: str</span>
+<span class="sd">        :param number_of_transactions: Maximum number of transactions that</span>
+<span class="sd">            shall be returned.</span>
+<span class="sd">        :type number_of_transactions: int, optional</span>
+<span class="sd">        :return: List of transactions linked to the requested address.</span>
+<span class="sd">        :rtype: list of (Transaction)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="s2">&quot;getTransactionsByAddress&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">number_of_transactions</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Transaction</span><span class="p">(</span><span class="o">**</span><span class="n">tx</span><span class="p">)</span> <span class="k">for</span> <span class="n">tx</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_transaction_hashes_by_address"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_transaction_hashes_by_address">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_transaction_hashes_by_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span>
+                                                <span class="n">number_of_transactions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the hashes of the latest transactions successfully performed</span>
+<span class="sd">        by or for an address. Note that this information might change when</span>
+<span class="sd">        blocks are reverted on the local state due to forks.</span>
+
+<span class="sd">        :param address: Address of which transactions should be gathered.</span>
+<span class="sd">        :type address: str</span>
+<span class="sd">        :param number_of_transactions: Maximum number of transactions that</span>
+<span class="sd">            shall be returned.</span>
+<span class="sd">        :type number_of_transactions: int, optional</span>
+<span class="sd">        :return: List of hashes of transactions linked to the requested</span>
+<span class="sd">            address.</span>
+<span class="sd">        :rtype: list of (str)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="s2">&quot;getTransactionHashesByAddress&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span>
+            <span class="n">number_of_transactions</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_transactions_by_batch_number"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_transactions_by_batch_number">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_transactions_by_batch_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_number</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns information about transactions by batch number.</span>
+
+<span class="sd">        :param batch_number: Batch number for which the transactions are going</span>
+<span class="sd">            to be gathered.</span>
+<span class="sd">        :type batch_number: int</span>
+<span class="sd">        :return: A list of transaction objects.</span>
+<span class="sd">        :rtype: List of (Transaction)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="s2">&quot;getTransactionsByBatchNumber&quot;</span><span class="p">,</span> <span class="n">batch_number</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">Transaction</span><span class="p">(</span><span class="o">**</span><span class="n">tx</span><span class="p">)</span> <span class="k">for</span> <span class="n">tx</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_transactions_by_block_number"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_transactions_by_block_number">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_transactions_by_block_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">height</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns information about transactions by block number.</span>
+
+<span class="sd">        :param height: Height of the block containing the transactions.</span>
+<span class="sd">        :type height: int</span>
+<span class="sd">        :return: A list of transaction objects.</span>
+<span class="sd">        :rtype: List of (Transaction)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="s2">&quot;getTransactionsByBlockNumber&quot;</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">Transaction</span><span class="p">(</span><span class="o">**</span><span class="n">tx</span><span class="p">)</span> <span class="k">for</span> <span class="n">tx</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_transaction_by_hash"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_transaction_by_hash">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_transaction_by_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">hash</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the information about a transaction requested by transaction</span>
+<span class="sd">        hash.</span>
+
+<span class="sd">        :param hash: Hash of a transaction.</span>
+<span class="sd">        :type hash: str</span>
+<span class="sd">        :return: A transaction object or None when no transaction was found.</span>
+<span class="sd">        :rtype: Transaction or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getTransactionByHash&quot;</span><span class="p">,</span> <span class="nb">hash</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Transaction</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span> <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_validator_address"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_validator_address">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_validator_address</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the address of the current validator.</span>
+
+<span class="sd">        :return: Address of the current validator.</span>
+<span class="sd">        :rtype: str or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getAddress&quot;</span><span class="p">))[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_validator_by_address"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_validator_by_address">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_validator_by_address</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a validator given its address</span>
+
+<span class="sd">        :param address: Address for which a validator should be gathered.</span>
+<span class="sd">        :type address: str</span>
+<span class="sd">        :param include_stakers: Set to true to include stakers in the</span>
+<span class="sd">            Validator object to be returned.</span>
+<span class="sd">        :return: Validator for the corresponding address</span>
+<span class="sd">        :rtype: StateData[Validator]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="s2">&quot;getValidatorByAddress&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">validator</span> <span class="o">=</span> <span class="n">Validator</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">BlockchainState</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">StateData</span><span class="p">[</span><span class="n">Validator</span><span class="p">](</span><span class="n">state</span><span class="p">,</span> <span class="n">validator</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_validators"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_validators">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_validators</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a all validators in the staking contract</span>
+
+<span class="sd">        :return: Validator for the corresponding address</span>
+<span class="sd">        :rtype: StateData[List of (Validator)]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getValidators&quot;</span><span class="p">)</span>
+
+        <span class="n">validators</span> <span class="o">=</span> <span class="p">[</span><span class="n">Validator</span><span class="p">(</span><span class="o">**</span><span class="n">validator</span><span class="p">)</span> <span class="k">for</span> <span class="n">validator</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]]</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">BlockchainState</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">StateData</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Validator</span><span class="p">]](</span><span class="n">state</span><span class="p">,</span> <span class="n">validators</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_validator_signing_key"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_validator_signing_key">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_validator_signing_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the signing key of the current validator.</span>
+
+<span class="sd">        :return: Signing key of the current validator.</span>
+<span class="sd">        :rtype: str or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getSigningKey&quot;</span><span class="p">))[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.get_validator_voting_key"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.get_validator_voting_key">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_validator_voting_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the voting key of the current validator.</span>
+
+<span class="sd">        :return: Voting key of the current validator.</span>
+<span class="sd">        :rtype: str or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getVotingKey&quot;</span><span class="p">))[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.importRawKey"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.importRawKey">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">importRawKey</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">private_key</span><span class="p">,</span> <span class="n">passphrase</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Imports a raw key into the wallet.</span>
+
+<span class="sd">        :param private_key: Private key to be imported.</span>
+<span class="sd">        :type private_key: str</span>
+<span class="sd">        :param passphrase: Optional passphrase to add to the private key.</span>
+<span class="sd">        :type passphrase: str</span>
+<span class="sd">        :return: Address of the imported raw key.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;importRawKey&quot;</span><span class="p">,</span> <span class="n">private_key</span><span class="p">,</span> <span class="n">passphrase</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.is_account_imported"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.is_account_imported">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_account_imported</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns wether an account has been imported into the wallet.</span>
+
+<span class="sd">        :param address: Address of the account that is going to be checked.</span>
+<span class="sd">        :type address: str</span>
+<span class="sd">        :return: Bool indicating wether the account has been imported.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;isAccountImported&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">))[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.is_account_unlocked"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.is_account_unlocked">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_account_unlocked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns wether an account has been unlocked in the wallet.</span>
+
+<span class="sd">        :param address: Address of the account that is going to be checked.</span>
+<span class="sd">        :type address: str</span>
+<span class="sd">        :return: Bool indicating wether the account has been unlocked.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;isAccountUnlocked&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">))[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.lock_account"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.lock_account">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">lock_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Locks an account in the wallet</span>
+
+<span class="sd">        :param address: Address of the account to be locked.</span>
+<span class="sd">        :type address: sre</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;lockAccount&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NimiqClient.mempool"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.mempool">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">mempool</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns information on the current mempool situation. This will</span>
+<span class="sd">        provide an overview of the number of transactions sorted into buckets</span>
+<span class="sd">        based on their fee per byte (in smallest unit).</span>
+
+<span class="sd">        :return: Mempool information.</span>
+<span class="sd">        :rtype: MempoolInfo</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;mempool&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">MempoolInfo</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="NimiqClient.mempool_content"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.mempool_content">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">mempool_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_transactions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns transactions that are currently in the mempool.</span>
+
+<span class="sd">        :param include_transactions: If True includes full transactions, if</span>
+<span class="sd">            False includes only transaction hashes.</span>
+<span class="sd">        :type include_transactions: bool, optional</span>
+<span class="sd">        :return: List of transactions(either represented by the transaction</span>
+<span class="sd">            hash or a transaction object).</span>
+<span class="sd">        :rtype: list of(Transaction or str)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;mempoolContent&quot;</span><span class="p">,</span> <span class="n">include_transactions</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">tx</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">tx</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="k">else</span> <span class="n">Transaction</span><span class="p">(</span><span class="o">**</span><span class="n">tx</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">tx</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.min_fee_per_byte"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.min_fee_per_byte">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">min_fee_per_byte</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the minimum fee per byte.</span>
+
+<span class="sd">        :return: The new minimum fee per byte.</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getMinFeePerByte&quot;</span><span class="p">))[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.peer_count"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.peer_count">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">peer_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Returns number of peers currently connected to the client.</span>
+
+<span class="sd">        :return: Number of connected peers.</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getPeerCount&quot;</span><span class="p">))[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.peer_id"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.peer_id">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">peer_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the peer ID of the running client.</span>
+
+<span class="sd">        :return: Peer ID of the running client.</span>
+<span class="sd">        :rtype: string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getPeerId&quot;</span><span class="p">))[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.peer_list"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.peer_list">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">peer_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns list of peers known to the client.</span>
+
+<span class="sd">        :return: The list of peers.</span>
+<span class="sd">        :rtype: list of(Peer)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;getPeerList&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Peer</span><span class="p">(</span><span class="o">**</span><span class="n">peer</span><span class="p">)</span> <span class="k">for</span> <span class="n">peer</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.peer_state"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.peer_state">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">peer_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the state of the peer.</span>
+
+<span class="sd">        :param address: The address of the peer.</span>
+<span class="sd">        :type address: str</span>
+<span class="sd">        :return: The current state of the peer.</span>
+<span class="sd">        :rtype: Peer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;peerState&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Peer</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="NimiqClient.set_peer_state"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.set_peer_state">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">set_peer_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the state of the peer.</span>
+
+<span class="sd">        :param address: The address of the peer.</span>
+<span class="sd">        :type address: str</span>
+<span class="sd">        :param command: The command to send.</span>
+<span class="sd">        :type command: PeerStateCommand</span>
+<span class="sd">        :return: The new state of the peer.</span>
+<span class="sd">        :rtype: Peer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;peerState&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Peer</span><span class="p">(</span><span class="o">**</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="NimiqClient.send_raw_transaction"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.send_raw_transaction">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_raw_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transaction</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends a signed message call transaction or a contract creation, if the</span>
+<span class="sd">        data field contains code.</span>
+
+<span class="sd">        :param transaction: The hex encoded signed transaction</span>
+<span class="sd">        :type transaction: str</span>
+<span class="sd">        :return: The Hex-encoded transaction hash.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;sendRawTransaction&quot;</span><span class="p">,</span> <span class="n">transaction</span><span class="p">))[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.send_basic_transaction"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.send_basic_transaction">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_basic_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">recipient</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">fee</span><span class="p">,</span>
+                                     <span class="n">validityStartHeight</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates and send a new basic transaction</span>
+
+<span class="sd">        :param address: The sender address.</span>
+<span class="sd">        :type address: str</span>
+<span class="sd">        :param recipient: The recipient address.</span>
+<span class="sd">        :type recipient: str</span>
+<span class="sd">        :param value: The value of the transaction.</span>
+<span class="sd">        :type value: int</span>
+<span class="sd">        :param fee: The fee of the transaction.</span>
+<span class="sd">        :type fee: int</span>
+<span class="sd">        :param validityStartHeight: The validity start height for the</span>
+<span class="sd">            transaction. Could be a string containing a block number</span>
+<span class="sd">            (e.g.&quot;1000&quot;) or an offset (e.g. &quot;+10&quot;).</span>
+<span class="sd">        :type validityStartHeight: str</span>
+<span class="sd">        :return: The Hex-encoded transaction hash.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="s2">&quot;sendBasicTransaction&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">recipient</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">fee</span><span class="p">,</span>
+            <span class="n">validityStartHeight</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.send_stake_transaction"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.send_stake_transaction">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_stake_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">staker</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">fee</span><span class="p">,</span>
+                                     <span class="n">validityStartHeight</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates and sends a stake transaction to add stake to an existing</span>
+<span class="sd">        staker</span>
+
+<span class="sd">        :param address: The sender address.</span>
+<span class="sd">        :type address: str</span>
+<span class="sd">        :param staker: The staker address.</span>
+<span class="sd">        :type staker: str</span>
+<span class="sd">        :param value: The value of the transaction.</span>
+<span class="sd">        :type value: int</span>
+<span class="sd">        :param fee: The fee of the transaction.</span>
+<span class="sd">        :type fee: int</span>
+<span class="sd">        :param validityStartHeight: The validity start height for the</span>
+<span class="sd">            transaction. Could be a string containing a block number</span>
+<span class="sd">            (e.g.&quot;1000&quot;) or an offset (e.g. &quot;+10&quot;).</span>
+<span class="sd">        :type validityStartHeight: str</span>
+<span class="sd">        :return: The Hex-encoded transaction hash.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="s2">&quot;sendStakeTransaction&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">staker</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">fee</span><span class="p">,</span>
+            <span class="n">validityStartHeight</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.send_set_active_stake_transaction"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.send_set_active_stake_transaction">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_set_active_stake_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">staker</span><span class="p">,</span>
+                                                <span class="n">new_active_balance</span><span class="p">,</span> <span class="n">fee</span><span class="p">,</span>
+                                                <span class="n">validityStartHeight</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates and sends a set active stake transaction to set a new value</span>
+<span class="sd">        for the active stake</span>
+
+<span class="sd">        :param address: The sender address.</span>
+<span class="sd">        :type address: str</span>
+<span class="sd">        :param staker: The staker address.</span>
+<span class="sd">        :type staker: str</span>
+<span class="sd">        :param new_active_balance: The new value for the active stake</span>
+<span class="sd">        :type new_active_balance: int</span>
+<span class="sd">        :param fee: The fee of the transaction.</span>
+<span class="sd">        :type fee: int</span>
+<span class="sd">        :param validityStartHeight: The validity start height for the</span>
+<span class="sd">            transaction. Could be a string containing a block number</span>
+<span class="sd">            (e.g.&quot;1000&quot;) or an offset (e.g. &quot;+10&quot;).</span>
+<span class="sd">        :type validityStartHeight: str</span>
+<span class="sd">        :return: The Hex-encoded transaction hash.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="s2">&quot;sendSetActiveStakeTransaction&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">staker</span><span class="p">,</span>
+            <span class="n">new_active_balance</span><span class="p">,</span> <span class="n">fee</span><span class="p">,</span> <span class="n">validityStartHeight</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.create_retire_stake_transaction"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.create_retire_stake_transaction">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_retire_stake_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">staker</span><span class="p">,</span>
+                                              <span class="n">retire_stake</span><span class="p">,</span> <span class="n">fee</span><span class="p">,</span>
+                                              <span class="n">validityStartHeight</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates (but do not send) a retire stake transaction</span>
+
+<span class="sd">        :param address: The sender address.</span>
+<span class="sd">        :type address: str</span>
+<span class="sd">        :param staker: The staker address.</span>
+<span class="sd">        :type staker: str</span>
+<span class="sd">        :param retire_stake: The stake to be retired</span>
+<span class="sd">        :type retire_stake: int</span>
+<span class="sd">        :param fee: The fee of the transaction.</span>
+<span class="sd">        :type fee: int</span>
+<span class="sd">        :param validityStartHeight: The validity start height for the</span>
+<span class="sd">            transaction. Could be a string containing a block number</span>
+<span class="sd">            (e.g.&quot;1000&quot;) or an offset (e.g. &quot;+10&quot;).</span>
+<span class="sd">        :type validityStartHeight: str</span>
+<span class="sd">        :return: The Hex-encoded transaction hash.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="s2">&quot;createRetireStakeTransaction&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">staker</span><span class="p">,</span> <span class="n">retire_stake</span><span class="p">,</span> <span class="n">fee</span><span class="p">,</span>
+            <span class="n">validityStartHeight</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.create_update_staker_transaction"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.create_update_staker_transaction">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_update_staker_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">staker</span><span class="p">,</span>
+                                               <span class="n">new_delegation</span><span class="p">,</span>
+                                               <span class="n">reactivate_all_stake</span><span class="p">,</span>
+                                               <span class="n">fee</span><span class="p">,</span> <span class="n">validityStartHeight</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates (but do not send) an update staker transaction</span>
+
+<span class="sd">        :param address: The sender address.</span>
+<span class="sd">        :type address: str</span>
+<span class="sd">        :param staker: The staker address.</span>
+<span class="sd">        :type staker: str</span>
+<span class="sd">        :param new_delegation: The new delegation address</span>
+<span class="sd">        :type new_delegation: str</span>
+<span class="sd">        :param reactivate_all_stake: Indicates if the stake is reactivated</span>
+<span class="sd">        :type reactivate_all_stake: bool</span>
+<span class="sd">        :param fee: The fee of the transaction.</span>
+<span class="sd">        :type fee: int</span>
+<span class="sd">        :param validityStartHeight: The validity start height for the</span>
+<span class="sd">            transaction. Could be a string containing a block number</span>
+<span class="sd">            (e.g.&quot;1000&quot;) or an offset (e.g. &quot;+10&quot;).</span>
+<span class="sd">        :type validityStartHeight: str</span>
+<span class="sd">        :return: The Hex-encoded transaction hash.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="s2">&quot;createUpdateStakerTransaction&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">staker</span><span class="p">,</span> <span class="n">new_delegation</span><span class="p">,</span>
+            <span class="n">reactivate_all_stake</span><span class="p">,</span> <span class="n">fee</span><span class="p">,</span> <span class="n">validityStartHeight</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.create_remove_stake_transaction"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.create_remove_stake_transaction">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_remove_stake_transaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">recipient</span><span class="p">,</span>
+                                              <span class="n">value</span><span class="p">,</span> <span class="n">fee</span><span class="p">,</span> <span class="n">validityStartHeight</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates (but do not send) a remove stake transaction</span>
+
+<span class="sd">        :param address: The sender address.</span>
+<span class="sd">        :type address: str</span>
+<span class="sd">        :param recipient: The recipient of the funds.</span>
+<span class="sd">        :type recipient: str</span>
+<span class="sd">        :param value: The value.</span>
+<span class="sd">        :type value: int</span>
+<span class="sd">        :param fee: The fee of the transaction.</span>
+<span class="sd">        :type fee: int</span>
+<span class="sd">        :param validityStartHeight: The validity start height for the</span>
+<span class="sd">            transaction. Could be a string containing a block number</span>
+<span class="sd">            (e.g.&quot;1000&quot;) or an offset (e.g. &quot;+10&quot;).</span>
+<span class="sd">        :type validityStartHeight: str</span>
+<span class="sd">        :return: The Hex-encoded transaction hash.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span>
+            <span class="s2">&quot;createRemoveStakeTransaction&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">recipient</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">fee</span><span class="p">,</span>
+            <span class="n">validityStartHeight</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="NimiqClient.subscribe_for_head_block"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.subscribe_for_head_block">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">subscribe_for_head_block</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]],</span>
+            <span class="n">include_transactions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Subscribes to blocks produced by the server and calls a callback on</span>
+<span class="sd">        each of the block.</span>
+
+<span class="sd">        :param callback: Callback to be called on each block.</span>
+<span class="sd">        :type callback: Callable[[NimiqClient, Block, Dict], Awaitable[None]]</span>
+<span class="sd">        :param kwargs: Callback extra arguments that will be passed when the</span>
+<span class="sd">            callback is called</span>
+<span class="sd">        :type kwargs: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_block_from_result</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">Block</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_and_subscribe</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span>
+                                       <span class="n">kwargs</span><span class="p">,</span>
+                                       <span class="n">get_block_from_result</span><span class="p">,</span>
+                                       <span class="s2">&quot;subscribeForHeadBlock&quot;</span><span class="p">,</span>
+                                       <span class="n">include_transactions</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NimiqClient.subscribe_for_head_block_hash"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.subscribe_for_head_block_hash">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">subscribe_for_head_block_hash</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]],</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Subscribes to blocks produced by the server and calls a callback on</span>
+<span class="sd">        each of the hash of the block.</span>
+
+<span class="sd">        :param callback: Callback to be called on each block.</span>
+<span class="sd">        :type callback: Callable[[NimiqClient, str, Dict], Awaitable[None]]</span>
+<span class="sd">        :param kwargs: Callback extra arguments that will be passed when the</span>
+<span class="sd">            callback is called</span>
+<span class="sd">        :type kwargs: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_hash_from_result</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_and_subscribe</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">get_hash_from_result</span><span class="p">,</span>
+                                       <span class="s2">&quot;subscribeForHeadBlockHash&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NimiqClient.subscribe_for_logs_by_addresses_and_types"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.subscribe_for_logs_by_addresses_and_types">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">subscribe_for_logs_by_addresses_and_types</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">addresses</span><span class="p">,</span>
+            <span class="n">log_types</span><span class="p">,</span>
+            <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="n">StateData</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]],</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Subscribes to block logs by type and addresses produced by the server</span>
+<span class="sd">        and calls a callback on each each of the logs.</span>
+
+<span class="sd">        :param addresses: List of addresses to subscribe to.</span>
+<span class="sd">        :type addresses: List of (str)</span>
+<span class="sd">        :param log_types: List of log types to subscribe to.</span>
+<span class="sd">        :type log_types: List of (str)</span>
+<span class="sd">        :param callback: Callback to be called on each block log.</span>
+<span class="sd">        :type callback: Callable[[NimiqClient, BlockLog, Dict],</span>
+<span class="sd">            Awaitable[None]]</span>
+<span class="sd">        :param kwargs: Callback extra arguments that will be passed when the</span>
+<span class="sd">            callback is called</span>
+<span class="sd">        :type kwargs: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_block_logs_from_result</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+            <span class="n">block_log</span> <span class="o">=</span> <span class="n">BlockLog</span><span class="o">.</span><span class="n">get_block_log</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">BlockchainState</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">StateData</span><span class="p">[</span><span class="n">BlockLog</span><span class="p">](</span><span class="n">state</span><span class="p">,</span> <span class="n">block_log</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_and_subscribe</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span>
+                                       <span class="n">kwargs</span><span class="p">,</span>
+                                       <span class="n">get_block_logs_from_result</span><span class="p">,</span>
+                                       <span class="s2">&quot;subscribeForLogsByAddressesAndTypes&quot;</span><span class="p">,</span>
+                                       <span class="n">addresses</span><span class="p">,</span>
+                                       <span class="n">log_types</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NimiqClient.subscribe_for_validator_election_by_address"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.subscribe_for_validator_election_by_address">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">subscribe_for_validator_election_by_address</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">address</span><span class="p">,</span>
+            <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Validator</span><span class="p">,</span> <span class="n">Dict</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]],</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Subscribes to validator election events and calls a callback on each</span>
+<span class="sd">        each of the validators received.</span>
+
+<span class="sd">        :param address: Validator address to subscribe for.</span>
+<span class="sd">        :type address: str</span>
+<span class="sd">        :param callback: Callback to be called on each validator.</span>
+<span class="sd">        :type callback: Callable[[Any, Validator, Dict], Awaitable[None]]</span>
+<span class="sd">        :param kwargs: Callback extra arguments that will be passed when the</span>
+<span class="sd">            callback is called</span>
+<span class="sd">        :type kwargs: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_validator_from_result</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+            <span class="n">validator</span> <span class="o">=</span> <span class="n">Validator</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">BlockchainState</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;metadata&#39;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">StateData</span><span class="p">[</span><span class="n">Validator</span><span class="p">](</span><span class="n">state</span><span class="p">,</span> <span class="n">validator</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_and_subscribe</span><span class="p">(</span>
+            <span class="n">callback</span><span class="p">,</span>
+            <span class="n">kwargs</span><span class="p">,</span>
+            <span class="n">get_validator_from_result</span><span class="p">,</span>
+            <span class="s2">&quot;subscribeForValidatorElectionByAddress&quot;</span><span class="p">,</span>
+            <span class="n">address</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NimiqClient.unlock_account"><a class="viewcode-back" href="../../../_autosummary/nimiqclient.nimiq_client.NimiqClient/#nimiqclient.nimiq_client.NimiqClient.unlock_account">[docs]</a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">unlock_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">passphrase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Unlocks a wallet account</span>
+
+<span class="sd">        :param address: The account address.</span>
+<span class="sd">        :type address: str</span>
+<span class="sd">        :param passphrase: Optional passphrase if the accounts requires it.</span>
+<span class="sd">        :type passphrase: str</span>
+<span class="sd">        :param duration: Optional duration in which the account is unlocked.</span>
+<span class="sd">        :type duration: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="s2">&quot;unlockAccount&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">passphrase</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

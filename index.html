@@ -1,0 +1,204 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nimiq Python Client &mdash; Albatross Nimiq Python Client 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script data-url_root="#" id="documentation_options" src="_static/documentation_options.js?v=43f7dc57"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex/" />
+    <link rel="search" title="Search" href="search/" />
+    <link rel="next" title="nimiqclient" href="_autosummary/nimiqclient/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            Albatross Nimiq Python Client
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="_autosummary/nimiqclient/">nimiqclient</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Albatross Nimiq Python Client</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Nimiq Python Client</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="nimiq-python-client">
+<h1>Nimiq Python Client<a class="headerlink" href="#nimiq-python-client" title="Permalink to this heading">¶</a></h1>
+<blockquote>
+<div><p>Python implementation of the Albatross Nimiq RPC client specs.</p>
+</div></blockquote>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">¶</a></h2>
+<p>To get started sending requests to a Nimiq node, we create a <code class="docutils literal notranslate"><span class="pre">NimiqClient</span></code>
+object.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">nimiqclient</span>
+
+<span class="k">async</span> <span class="k">with</span> <span class="n">NimiqClient</span><span class="p">(</span>
+        <span class="n">scheme</span><span class="o">=</span><span class="s2">&quot;http&quot;</span><span class="p">,</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="s2">&quot;luna&quot;</span><span class="p">,</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;moon&quot;</span><span class="p">,</span>
+        <span class="n">host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span>
+        <span class="n">port</span><span class="o">=</span><span class="mi">8648</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+
+    <span class="c1"># Make RPC call to get consensus status</span>
+    <span class="n">consensus</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">consensus</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Consensus: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">consensus</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Note: When no <code class="docutils literal notranslate"><span class="pre">config</span></code> object is passed in the initialization it will use the
+default values in the Nimiq node.</p>
+</section>
+<section id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this heading">¶</a></h2>
+<p>The complete API documentation is available <a class="reference external" href="https://jsdanielh.github.io/python-client/">here</a>.</p>
+<p>Check out the <a class="reference external" href="https://github.com/nimiq/core-rs-albatross/tree/albatross/rpc-server/src/dispatchers">Nimiq RPC specs</a>
+for the behind-the-scenes RPC calls.</p>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h2>
+<p>Clone the repository and install the package from source</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/jsdanielh/python-client
+<span class="nb">cd</span><span class="w"> </span>python-client
+python<span class="w"> </span>setup.py<span class="w"> </span>install
+</pre></div>
+</div>
+</section>
+<section id="build">
+<h2>Build<a class="headerlink" href="#build" title="Permalink to this heading">¶</a></h2>
+<p>Clone the repo and install it</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/jsdanielh/python-client
+<span class="nb">cd</span><span class="w"> </span>python-client
+python<span class="w"> </span>setup.py<span class="w"> </span>install
+</pre></div>
+</div>
+<p>All done, happy coding!</p>
+</section>
+<section id="test">
+<h2>Test<a class="headerlink" href="#test" title="Permalink to this heading">¶</a></h2>
+<p>You need a start a Devnet Nimiq node:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># TODO: Add steps</span>
+</pre></div>
+</div>
+<p>Tests are stored in the <code class="docutils literal notranslate"><span class="pre">/tests</span></code> folder and can be run from the command line
+like this:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>-v
+</pre></div>
+</div>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading">¶</a></h2>
+<p>The documentation is generated automatically with <a class="reference external" href="https://www.sphinx-doc.org">Sphinx</a>.</p>
+<p>From the repository root directory install the development dependency
+requirements:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements-dev.txt
+</pre></div>
+</div>
+<p>Then from the <code class="docutils literal notranslate"><span class="pre">/docs</span></code> directory run Sphinx via the <code class="docutils literal notranslate"><span class="pre">make</span></code> command:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>docs
+make<span class="w"> </span>html
+</pre></div>
+</div>
+<p>Add a blank file in the <code class="docutils literal notranslate"><span class="pre">/docs</span></code> folder with the name <code class="docutils literal notranslate"><span class="pre">.nojekyll</span></code> for the
+documentation hosted on GitHub Pages:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>touch<span class="w"> </span>.nojekyll
+</pre></div>
+</div>
+</section>
+<section id="contributions">
+<h2>Contributions<a class="headerlink" href="#contributions" title="Permalink to this heading">¶</a></h2>
+<p>This implementation is based on the <a class="reference external" href="https://nimiq-community.github.io/python-client/">original client</a>
+developed by the Nimiq Community which was originally contributed by <a class="reference external" href="https://github.com/rraallvv/">rraallvv</a>.</p>
+<p>Bug reports and pull requests are welcome! Please refer to the <a class="reference external" href="https://github.com/jsdanielh/python-client/issues">issue tracker</a>
+for ideas.</p>
+</section>
+<section id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference external" href="LICENSE.md">Apache 2.0</a></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/nimiqclient/#module-nimiqclient" title="nimiqclient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nimiqclient</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="_autosummary/nimiqclient/" class="btn btn-neutral float-right" title="nimiqclient" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
