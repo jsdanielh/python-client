@@ -861,6 +861,35 @@ class NimiqClient:
             validityStartHeight)
         return result['data']
 
+    async def create_update_staker_transaction(self, address, staker,
+                                               new_delegation,
+                                               reactivate_all_stake,
+                                               fee, validityStartHeight):
+        """
+        Creates (but do not send) an update staker transaction
+
+        :param address: The sender address.
+        :type address: str
+        :param staker: The staker address.
+        :type staker: str
+        :param new_delegation: The new delegation address
+        :type new_delegation: str
+        :param reactivate_all_stake: Indicates if the stake is reactivated
+        :type reactivate_all_stake: bool
+        :param fee: The fee of the transaction.
+        :type fee: int
+        :param validityStartHeight: The validity start height for the
+            transaction. Could be a string containing a block number
+            (e.g."1000") or an offset (e.g. "+10").
+        :type validityStartHeight: str
+        :return: The Hex-encoded transaction hash.
+        :rtype: str
+        """
+        result = await self._call(
+            "createUpdateStakerTransaction", address, staker, new_delegation,
+            reactivate_all_stake, fee, validityStartHeight)
+        return result['data']
+
     async def create_remove_stake_transaction(self, address, recipient,
                                               value, fee, validityStartHeight):
         """
